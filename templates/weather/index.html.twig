@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Weather Information{% endblock %}
+
+{% block body %}
+<div class="container mx-auto mt-10 p-5">
+    <h1 class="text-3xl font-semibold text-center mb-8">Weather Information</h1>
+
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
+        <h2 class="text-2xl font-semibold mb-4">Find Weather by Country</h2>
+
+        {{ form_start(form, {'attr': {'id': 'weatherForm', 'method': 'get'}}) }}
+        <div class="mb-4">
+            {{ form_label(form.country, 'Country', {'label_attr': {'class': 'block text-lg text-gray-700'}}) }}
+            {{ form_widget(form.country, {'attr': {'id': 'country-input', 'class': 'block w-full mt-1 border-gray-300 rounded'}}) }}
+            {{ form_errors(form.country) }}
+        </div>
+        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Find</button>
+    {{ form_end(form) }}
+
+
+        {# TODO: 
+            Add all fields from hourly figures,
+            Add field where can choose which calculation to do,
+            Create Service and/or Controller that does different calculation methods with weatherData,
+            Add button to save the calculation,
+            Add saved calculations in weather_index to calculations table,
+            Take add form out of calculation-overview twig and put into edit twig,
+            
+         #}
+        <div id="weatherResult" class="mt-6 hidden">
+            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative">
+                <h3 class="text-xl font-semibold mb-2">Weather in <span id="weatherCity"></span></h3>
+                <p><strong>Temperature:</strong> <span id="weatherTemp"></span>°C</p>
+                <p><strong>Weather:</strong> <span id="weatherDescription"></span></p>
+                <p><strong>Humidity:</strong> <span id="weatherHumidity"></span>%</p>
+                <p><strong>Wind Speed:</strong> <span id="weatherWind"></span> m/s</p>
+                <p><strong>Country:</strong> <span id="weatherCountry"></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('weatherForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        const form = event.target;
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: form.method,
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert(`Error: ${data.error}`);
+                return;
+            }
+
+            console.log('DATA: ', data);
+
+            document.getElementById('weatherCity').textContent = data.name;
+            document.getElementById('weatherTemp').textContent = (data.main.temp - 273.15).toFixed(2); // Convert Kelvin to Celsius
+            document.getElementById('weatherDescription').textContent = data.weather[0].description;
+            document.getElementById('weatherHumidity').textContent = data.main.humidity;
+            document.getElementById('weatherWind').textContent = data.wind.speed;
+            document.getElementById('weatherCountry').textContent = data.sys.country;
+
+            document.getElementById('weatherResult').classList.remove('hidden');
+        })
+        .catch(error => {
+            alert('Error fetching weather data. Please try again.');
+            console.error(error);
+        });
+    });
+</script>
+{% endblock %}

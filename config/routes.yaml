@@ -1,5 +1,50 @@
-controllers:
-    resource:
-        path: ../src/Controller/
-        namespace: App\Controller
-    type: attribute
+# config/routes.yaml
+
+weather_index:
+    path: /weather
+    controller: App\Controller\WeatherController::index
+    methods: GET
+
+weather_get:
+    path: /weather
+    controller: App\Controller\WeatherController::getWeather
+    methods: [POST, GET]  # Add POST here
+
+
+weather_test:
+    path: /weather/test
+    controller: App\Controller\WeatherController::test
+
+
+
+
+
+# CALCULATIONS
+
+
+calculation_overview:
+  path: /calculations/calculation_overview
+  controller: App\Controller\CalculationsController::index
+  methods: [GET, POST]
+
+
+
+calculation_list:
+    path: /calculations
+    controller: App\Controller\CalculationsController::listCalculations
+    methods: [GET]
+
+calculation_create:
+    path: /calculations/create
+    controller: App\Controller\CalculationsController::createCalculation
+    methods: [POST]
+
+calculation_edit:
+    path: /calculations/edit/{id}
+    controller: App\Controller\CalculationsController::editCalculation
+    methods: [GET, POST]
+
+calculation_delete:
+    path: /calculations/delete/{id}
+    controller: App\Controller\CalculationsController::deleteCalculation
+    methods: [POST]
