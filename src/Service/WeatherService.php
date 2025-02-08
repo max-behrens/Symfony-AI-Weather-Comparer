@@ -3,54 +3,64 @@ namespace App\Service;
 
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\HttpClient\Exception\TransportExceptionInterface;
+use Psr\Log\LoggerInterface;
+
 
 class WeatherService
 {
     private $httpClient;
     private $apiKey;
+    private $logger;
 
-    public function __construct(HttpClientInterface $httpClient, string $apiKey)
+    public function __construct(HttpClientInterface $httpClient, string $apiKey, LoggerInterface $logger)
     {
         $this->httpClient = $httpClient;
         $this->apiKey = $apiKey;
+        $this->logger = $logger;
     }
 
-    public function fetchWeatherByCountry(string $country): array
+    public function fetchWeatherByCity(string $city): array
     {
-        // Construct the URL for fetching weather data for a specific country
-        $geocodeUrl = "https://api.openweathermap.org/data/2.5/weather?q={$country}&appid={$this->apiKey}";
+        $url = "https://api.openweathermap.org/data/2.5/forecast?q={$city}&appid={$this->apiKey}";
 
         try {
             // Make the HTTP request
-            $response = $this->httpClient->request('GET', $geocodeUrl);
+            $response = $this->httpClient->request('GET', $url);
 
-
-            // TODO: Get hourly figures from API
-            
-            // // Parse the geolocation response and get lat and lon
-            // $geoData = $response->toArray();
-            // $lat = $geoData['coord']['lat'];
-            // $lon = $geoData['coord']['lon'];
-
-            // // Step 2: Use lat and lon to fetch weather data from the OpenWeather onecall API
-            // $oneCallUrl = "https://api.openweathermap.org/data/3.0/onecall?lat={$lat}&lon={$lon}&exclude=current,minutely&appid={$this->apiKey}";
-
-            // // Fetch weather data (hourly and daily) using the onecall API
-            // $response = $this->httpClient->request('GET', $oneCallUrl);
-
-            // Check if the response status code is 200 (successful)
             if ($response->getStatusCode() !== 200) {
                 throw new \Exception("Failed to fetch weather data: " . $response->getContent(false));
             }
 
-            // Return the response as an array
-            return $response->toArray();
+            // Decode the response content into an array
+            $data = json_decode($response->getContent(), true);
+
+
+            $this->logger->info('$data NOW' , [
+                'data' => $data
+            ]);
+
+            // Format the data for easier display
+            $formattedData = [];
+            foreach ($data['list'] as $forecast) {
+                $formattedData[] = [
+                    'time' => $forecast['dt_txt'],
+                    'temperature' => round($forecast['main']['temp'] - 273.15, 2),
+                    'feels_like' => round($forecast['main']['feels_like'] - 273.15, 2),
+                    'humidity' => $forecast['main']['humidity'],
+                    'pressure' => $forecast['main']['pressure'],
+                    'wind_speed' => $forecast['wind']['speed'],
+                    'description' => ucfirst($forecast['weather'][0]['description']),
+                    'rain' => $forecast['rain']['3h'] ?? 0
+                ];
+            }
+
+            return $formattedData;
+
         } catch (TransportExceptionInterface $e) {
-            // Handle any transport-related exceptions (e.g., network issues)
             throw new \Exception("Network error: " . $e->getMessage());
         } catch (\Exception $e) {
-            // Handle other exceptions, such as invalid response
-            throw new \Exception("Couldn't fetch weather data for country: {$country}. Error: " . $e->getMessage());
+            throw new \Exception("Couldn't fetch weather data for city: {$city}. Error: " . $e->getMessage());
         }
     }
+
 }

@@ -6,6 +6,7 @@ use App\Entity\Calculation;
 use App\Form\WeatherSearchType;
 use App\Form\CalculationType;
 use App\Service\WeatherService;
+use App\Service\WeatherCalculationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,12 +19,14 @@ use Doctrine\ORM\EntityManagerInterface;
 class CalculationsController extends AbstractController
 {
     private $weatherService;
+    private $weatherCalculationService;
     private $logger;
     private $entityManager;
 
-    public function __construct(WeatherService $weatherService, LoggerInterface $logger, EntityManagerInterface $entityManager)
+    public function __construct(WeatherService $weatherService, WeatherCalculationService $weatherCalculationService, LoggerInterface $logger, EntityManagerInterface $entityManager)
     {
         $this->weatherService = $weatherService;
+        $this->weatherCalculationService = $weatherCalculationService;
         $this->logger = $logger;
         $this->entityManager = $entityManager;
     }
@@ -91,7 +94,7 @@ class CalculationsController extends AbstractController
             $this->entityManager->flush();
 
             // Add a flash message indicating success
-            $this->addFlash('success', 'calculation created successfully!');
+            $this->addFlash('success', 'Calculation created successfully!');
 
             // Redirect to calculation list after creation
             return $this->redirectToRoute('calculation_list');
@@ -117,7 +120,7 @@ class CalculationsController extends AbstractController
             $this->entityManager->flush();
 
             // Add a success flash message
-            $this->addFlash('success', 'calculation updated successfully!');
+            $this->addFlash('success', 'Calculation updated successfully!');
 
             // Redirect to the calculation list page after successful update
             return $this->redirectToRoute('calculation_list');
@@ -138,7 +141,7 @@ class CalculationsController extends AbstractController
         $this->entityManager->remove($calculation);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'calculation deleted successfully!');
+        $this->addFlash('success', 'Calculation deleted successfully!');
         return $this->redirectToRoute('calculation_list');
     }
 }

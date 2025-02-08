@@ -22,32 +22,34 @@
         {% endblock %}
     </head>
 
-
-    <!-- Sidebar -->
-    <div class="flex">
-        <div class="w-64 h-screen bg-gray-800 text-white">
-
+<!-- Sidebar -->
+<div class="flex">
+    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white z-50">
         <!-- Mobile Sidebar Toggle Button -->
         <button id="sidebar-toggle" class="sm:hidden p-2 bg-gray-800 text-white rounded-md">
             <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
         </button>
-            <!-- Sidebar content -->
-            <div class="flex items-center justify-center p-5">
-                <a href="{{ path('weather_index') }}" class="text-2xl font-bold text-white">Weather App</a>
-            </div>
-            <div class="space-y-4">
-                <a href="{{ path('weather_index') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Home</a>
-                <a href="{{ path('calculation_overview') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
-                <a href="{{ path('weather_test') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test</a>
-            </div>
-        </div>
 
-        <body>
-            {% block body %}{% endblock %}
-        </body>
+        <!-- Sidebar content -->
+        <div class="flex items-center justify-center p-5">
+            <a href="{{ path('weather_index') }}" class="text-2xl py-2 px-4 font-bold text-white">Weather Calculator</a>
+        </div>
+        
+        <div class="space-y-4 px-4 py-6">
+            <a href="{{ path('weather_index') }}" data-turbo="false" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
+            <a href="{{ path('calculation_overview') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
+            <a href="{{ path('weather_test') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test Page</a>
+        </div>
     </div>
+
+    <!-- Page Content -->
+    <div class="flex-1 ml-64 p-5 overflow-x-hidden">
+        <!-- Main Content goes here -->
+        {% block body %}{% endblock %}
+    </div>
+</div>
 
 
     

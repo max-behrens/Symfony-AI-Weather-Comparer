@@ -16,6 +16,12 @@ weather_test:
     controller: App\Controller\WeatherController::test
 
 
+weather_climate_explanation:
+    path: /weather/climate-explanation
+    controller: App\Controller\WeatherController::climateExplanation
+    methods: [POST, GET]
+
+
 
 
 

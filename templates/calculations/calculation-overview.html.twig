@@ -1,62 +1,86 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Calculation Manager{% endblock %}
+{% block title %}Calculation Manager
+{% endblock %}
 
 {% block body %}
-    <div class="container mx-auto mt-10 p-5">
-        <h1 class="text-3xl font-semibold text-center mb-8">Calculation Manager</h1>
+	<div class="container mx-auto mt-10 p-5">
+		<h1 class="text-3xl font-semibold text-center mb-8">Calculation Manager</h1>
 
-        {% for message in app.flashes('success') %}
-            <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                {{ message }}
-            </div>
-        {% endfor %}
+		{% for message in app.flashes('success') %}
+            <div class="max-w-md mx-auto rounded-lg bg-green-100 border border-green-400 text-green-700 px-4 py-3 relative mb-4">
+				{{ message }}
+			</div>
+		{% endfor %}
 
-        <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
-            <h2 class="text-2xl font-semibold mb-4">Add a New Calculation</h2>
-            <form method="POST" action="{{ path('calculation_create') }}">
-                {{ form(form) }}  {# Display the form for adding a new Calculation #}
-            </form>
-        </div>
+		<div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
+			<h2 class="text-2xl font-semibold mb-4">Add a New Calculation</h2>
+			<form method="POST" action="{{ path('calculation_create') }}">
+				{{ form(form) }}
+					{# Display the form for adding a new Calculation #}
+				</form>
+			</div>
 
-        <div class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
-            <h2 class="text-2xl font-semibold mb-4">Calculation List</h2>
-            <div class="overflow-x-auto">
-                <table class="min-w-full table-auto border-collapse text-sm text-left text-gray-500">
-                    <thead class="bg-gray-100 text-xs uppercase font-medium text-gray-700">
-                        <tr>
-                            <th class="px-4 py-3 border-b">ID</th>
-                            <th class="px-4 py-3 border-b">Calculation</th>
-                            <th class="px-4 py-3 border-b">Due Date</th>
-                            <th class="px-4 py-3 border-b">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if calculations is not empty %}
-                            {% for calculation in calculations %}
-                            <tr class="border-b hover:bg-gray-50">
-                                <td class="px-4 py-2">{{ calculation.id }}</td>
-                                <td class="px-4 py-2">{{ calculation.calculation }}</td>
-                                <td class="px-4 py-2">
-                                    {{ calculation.dueDate ? calculation.dueDate|date('Y-m-d') : 'N/A' }}
-                                </td>
-                                <td class="px-4 py-2">
-                                    <a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-700">Edit</a> |
-                                    <form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
-                                        <input type="hidden" name="_method" value="DELETE">
-                                        <button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure?');">Delete</button>
-                                    </form>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="4" class="text-center py-4">No calculations available.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-{% endblock %}
+			<div class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
+				<h2 class="text-2xl font-semibold mb-4">Calculation List</h2>
+				<div
+					class="overflow-x-auto">
+					{# templates/calculations/calculation-overview.html.twig - Update the table section #}
+					<table class="min-w-full table-auto border-collapse text-sm text-left text-gray-500">
+						<thead class="bg-gray-100 text-xs uppercase font-medium text-gray-700">
+							<tr>
+								<th class="px-4 py-3 border-b">ID</th>
+								<th class="px-4 py-3 border-b">Country</th>
+								<th class="px-4 py-3 border-b">Calculations</th>
+								<th class="px-4 py-3 border-b">AI Response</th>
+								<th class="px-4 py-3 border-b">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% if calculations is not empty %}
+								{% for calculation in calculations %}
+									<tr class="border-b hover:bg-gray-50">
+										<td class="px-4 py-2">{{ calculation.id }}</td>
+										<td class="px-4 py-2">{{ calculation.country }}</td>
+										<td class="px-4 py-2">{{ calculation.calculations }}</td>
+										<td class="px-4 py-2">{{ calculation.aiResponse }}</td>
+										<td class="px-4 py-2">
+											<a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
+											|
+											<form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
+												<input type="hidden" name="_method" value="DELETE">
+												<button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure?');">Delete</button>
+											</form>
+										</td>
+									</tr>
+								{% endfor %}
+							{% else %}
+								<tr>
+									<td colspan="4" class="text-center py-4">No calculations available.</td>
+								</tr>
+							{% endif %}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+
+		<script>
+
+			document.addEventListener('DOMContentLoaded', function () { // Check if there's calculation data in sessionStorage
+const calculationData = sessionStorage.getItem('calculationData');
+if (calculationData) {
+const data = JSON.parse(calculationData);
+
+// Populate the form fields
+document.querySelector('[name="calculation[calculations]"]').value = data.calculations;
+document.querySelector('[name="calculation[aiResponse]"]').value = data.aiResponse;
+document.querySelector('[name="calculation[country]"]').value = data.country;
+
+// Clear the sessionStorage
+sessionStorage.removeItem('calculationData');
+}
+});
+		</script>
+	{% endblock %}

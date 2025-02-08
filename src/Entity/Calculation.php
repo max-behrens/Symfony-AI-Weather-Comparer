@@ -13,34 +13,48 @@ class Calculation
     #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(type: 'string', length: 255)]
-    protected string $calculation;
+    #[ORM\Column(type: 'text')]
+    protected string $calculations;
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    protected ?\DateTimeInterface $dueDate;
+    #[ORM\Column(type: 'text')]
+    protected string $aiResponse;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    protected string $country;
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCalculation(): string
+    public function getCountry(): string
     {
-        return $this->calculation;
+        return $this->country;
     }
 
-    public function setCalculation(string $calculation): void
+    public function setCountry(string $country): void
     {
-        $this->calculation = $calculation;
+        $this->country = $country;
     }
 
-    public function getDueDate(): ?\DateTimeInterface
+
+    public function getCalculations(): string
     {
-        return $this->dueDate;
+        return $this->calculations;
     }
 
-    public function setDueDate(?\DateTimeInterface $dueDate): void
+    public function setCalculations(string $calculations): void
     {
-        $this->dueDate = $dueDate;
+        $this->calculations = $calculations;
+    }
+
+    public function getAiResponse(): string
+    {
+        return $this->aiResponse;
+    }
+
+    public function setAiResponse(string $aiResponse): void
+    {
+        $this->aiResponse = $aiResponse;
     }
 }

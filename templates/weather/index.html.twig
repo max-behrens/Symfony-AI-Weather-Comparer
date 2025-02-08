@@ -4,48 +4,83 @@
 
 {% block body %}
 <div class="container mx-auto mt-10 p-5">
-    <h1 class="text-3xl font-semibold text-center mb-8">Weather Information</h1>
+    <h1 class="text-3xl font-semibold text-center mb-8">Weather Fluctuation Calculator</h1>
 
     <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
-        <h2 class="text-2xl font-semibold mb-4">Find Weather by Country</h2>
+        <h2 class="text-2xl font-semibold mb-4">Find Monthly Weather By City</h2>
 
-        {{ form_start(form, {'attr': {'id': 'weatherForm', 'method': 'get'}}) }}
+       {{ form_start(form, {
+            'attr': {'id': 'weatherForm', 'method': 'get'},
+            'options': {'action': 'ajax'}
+        }) }}
         <div class="mb-4">
-            {{ form_label(form.country, 'Country', {'label_attr': {'class': 'block text-lg text-gray-700'}}) }}
-            {{ form_widget(form.country, {'attr': {'id': 'country-input', 'class': 'block w-full mt-1 border-gray-300 rounded'}}) }}
-            {{ form_errors(form.country) }}
+            {{ form_label(form.city, 'City', {'label_attr': {'class': 'block text-lg text-gray-700'}}) }}
+            {{ form_widget(form.city, {'attr': {'id': 'city-input', 'class': 'block w-full mt-1 border-gray-300 rounded'}}) }}
+            {{ form_errors(form.city) }}
         </div>
         <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">Find</button>
-    {{ form_end(form) }}
+        {{ form_end(form) }}
 
-
-        {# TODO: 
-            Add all fields from hourly figures,
-            Add field where can choose which calculation to do,
-            Create Service and/or Controller that does different calculation methods with weatherData,
-            Add button to save the calculation,
-            Add saved calculations in weather_index to calculations table,
-            Take add form out of calculation-overview twig and put into edit twig,
-            
-         #}
-        <div id="weatherResult" class="mt-6 hidden">
-            <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative">
-                <h3 class="text-xl font-semibold mb-2">Weather in <span id="weatherCity"></span></h3>
-                <p><strong>Temperature:</strong> <span id="weatherTemp"></span>°C</p>
-                <p><strong>Weather:</strong> <span id="weatherDescription"></span></p>
-                <p><strong>Humidity:</strong> <span id="weatherHumidity"></span>%</p>
-                <p><strong>Wind Speed:</strong> <span id="weatherWind"></span> m/s</p>
-                <p><strong>Country:</strong> <span id="weatherCountry"></span></p>
-            </div>
-        </div>
+         <button id="saveCalculationBtn" class="hidden mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75">
+            Save Fluctuation Values
+        </button>
     </div>
+
+
+    <!-- Weather Forecast Results (bottom horizontal) -->
+    <div id="weatherForecastResults" class="hidden bottom-0 left-0 w-full bg-gray-50 p-5 rounded-lg shadow-md mt-10">
+        <h3 class="text-xl font-semibold mb-4 text-center"><span id="forecastTitle">Monthly Weather</span></h3>
+        <div id="forecastContainer" class="flex space-x-4 overflow-x-auto justify-between"></div>
+    </div>
+
+    <!-- Forecast Difference Results (top-right) -->
+    <div id="weatherCalculationResults" class="hidden bottom-0 left-0 w-full bg-gray-50 p-5 rounded-lg shadow-md mt-10">
+        <h3 class="text-xl font-semibold mb-4 text-center">Weather Fluctuation Values</h3>
+        
+        <div id="temperatureChanges" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative mb-4">
+            <h4 class="font-semibold">Temperature Rate of Change (%)</h4>
+            <p id="tempRateOfChange"></p>
+            <p id="averageTempRateOfChange"></p>
+        </div>
+         <div id="temperatureExplanation" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                <strong>AI Explanation:</strong>
+                <p id="tempExplanationText"></p>
+            </div>
+        
+        <div id="humidityChanges" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative mb-4">
+            <h4 class="font-semibold">Humidity Rate of Change (%)</h4>
+            <p id="humidityRateOfChange"></p>
+            <p id="averageHumRateOfChange"></p>
+        </div>
+
+        <div id="humidityExplanation" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                <strong>AI Explanation:</strong>
+                <p id="humExplanationText"></p>
+            </div>
+        
+        <div id="pressureChanges" class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg relative mb-4">
+            <h4 class="font-semibold">Pressure Rate of Change (%)</h4>
+            <p id="pressureRateOfChange"></p>
+            <p id="averagePresRateOfChange"></p>
+        </div>
+
+        <div id="pressureExplanation" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+                <strong>AI Explanation:</strong>
+                <p id="presExplanationText"></p>
+            </div>
+        
+    </div>
+
 </div>
 
+
 <script>
+document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('weatherForm').addEventListener('submit', function(event) {
-        event.preventDefault(); // Prevent the default form submission
+        event.preventDefault();
         const form = event.target;
         const formData = new FormData(form);
+        const cityInput = document.getElementById('weather_search_city').value;
 
         fetch(form.action, {
             method: form.method,
@@ -61,21 +96,111 @@
                 return;
             }
 
-            console.log('DATA: ', data);
+            console.log('DATA:', data);
 
-            document.getElementById('weatherCity').textContent = data.name;
-            document.getElementById('weatherTemp').textContent = (data.main.temp - 273.15).toFixed(2); // Convert Kelvin to Celsius
-            document.getElementById('weatherDescription').textContent = data.weather[0].description;
-            document.getElementById('weatherHumidity').textContent = data.main.humidity;
-            document.getElementById('weatherWind').textContent = data.wind.speed;
-            document.getElementById('weatherCountry').textContent = data.sys.country;
+            const forecastContainer = document.getElementById('forecastContainer');
+            // Clear previous results.
+            forecastContainer.innerHTML = '';
 
-            document.getElementById('weatherResult').classList.remove('hidden');
+            // Update the forecast title with the entered country name.
+            document.getElementById('forecastTitle').textContent = `Monthly Forecast for ${cityInput}`;
+
+            // Ensure you're using data.forecasts and looping over that
+            const forecasts = data.forecasts || [];
+
+            forecasts.forEach((forecast) => {
+                const forecastElement = document.createElement('div');
+                forecastElement.classList.add('bg-blue-100', 'border', 'border-blue-400', 'text-blue-700', 'px-4', 'py-3', 'rounded-lg', 'relative', 'w-64');
+                forecastElement.innerHTML = `
+                    <h4 class="text-lg font-semibold mb-2">Forecast for: ${forecast.time}</h4>
+                    <p><strong>Temperature:</strong> ${forecast.temperature.toFixed(2)}°C</p>
+                    <p><strong>Feels Like:</strong> ${forecast.feels_like.toFixed(2)}°C</p>
+                    <p><strong>Humidity:</strong> ${forecast.humidity}%</p>
+                    <p><strong>Pressure:</strong> ${forecast.pressure} hPa</p>
+                `;
+                forecastContainer.appendChild(forecastElement);
+            });
+
+
+            console.log('HERE NOW');
+
+            // Display the forecast differences
+            document.getElementById('tempRateOfChange').textContent = `Rate of Change Between Each Month: ${data.temperatureChanges.join(', ')}`;
+            document.getElementById('humidityRateOfChange').textContent = `Rate of Change Between Each Month: ${data.humidityChanges.join(', ')}`;
+            document.getElementById('pressureRateOfChange').textContent = `Rate of Change Between Each Month: ${data.pressureChanges.join(', ')}`;
+
+            document.getElementById('averageTempRateOfChange').textContent = `Overall Temperate Volaitility: ${data.averageTemperatureChanges}`;
+            document.getElementById('averageHumRateOfChange').textContent = `Overall Humidity Volatility: ${data.averageHumidityChanges}`;
+            document.getElementById('averagePresRateOfChange').textContent = `Overall Pressure Volatility: ${data.averagePressureChanges}`;
+
+
+              // Fetch the climate explanation based on the averages
+            fetch('/weather/climate-explanation', {
+                method: 'POST',
+                body: new URLSearchParams({
+                    temperature: data.averageTemperatureChanges,
+                    humidity: data.averageHumidityChanges,
+                    pressure: data.averagePressureChanges,
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(explanationData => {
+                console.log('Climate Explanation:', explanationData);
+
+                // Update each explanation div and make it visible
+                document.getElementById('tempExplanationText').textContent = explanationData.temperatureExplanation;
+                document.getElementById('temperatureExplanation').classList.remove('hidden');
+
+                document.getElementById('humExplanationText').textContent = explanationData.humidityExplanation;
+                document.getElementById('humidityExplanation').classList.remove('hidden');
+
+                document.getElementById('presExplanationText').textContent = explanationData.pressureExplanation;
+                document.getElementById('pressureExplanation').classList.remove('hidden');
+
+                window.calculationData = {
+                    calculations: `Temperature Volatility: ${data.averageTemperatureChanges}, Humidity Volatility: ${data.averageHumidityChanges}, Pressure Volatility: ${data.averagePressureChanges}`,
+                    aiResponse: `Temperature: ${explanationData.temperatureExplanation}\nHumidity: ${explanationData.humidityExplanation}\nPressure: ${explanationData.pressureExplanation}`,
+                    country: document.getElementById('weather_search_city').value // Get the country input value
+                };
+            })
+            .catch(error => {
+                console.error('Error fetching climate explanation:', error);
+            });
+
+            // Show the calculation results
+            document.getElementById('weatherCalculationResults').classList.remove('hidden');
+
+
+            // Show the forecast results and the calculation results
+            document.getElementById('weatherForecastResults').classList.remove('hidden');
+            document.getElementById('weatherCalculationResults').classList.remove('hidden');
+
+
+                    document.getElementById('saveCalculationBtn').classList.remove('hidden');
+
+
+
         })
         .catch(error => {
             alert('Error fetching weather data. Please try again.');
             console.error(error);
         });
+
     });
+
+    // Add click handler for Save Calculation button
+    document.getElementById('saveCalculationBtn').addEventListener('click', function() {
+        // Store the calculation data in sessionStorage
+        sessionStorage.setItem('calculationData', JSON.stringify(window.calculationData));
+        // Redirect to the calculation overview page
+        window.location.href = '{{ path('calculation_overview') }}';
+    });
+
+});
 </script>
+
 {% endblock %}
