@@ -16,7 +16,9 @@ Clone the repository:
 
 Open your terminal and run the following command in the director of your choice to create the project in, to clone the repository to your local machine:
 
-git clone https://github.com/max-behrens/Symfony-AI-Weather-Comparer.git
+git clone git@github.com:max-behrens/Symfony-AI-Weather-Comparer.git
+
+You may need to generate an ssh key and add it to git to authorise this command.
 
 
 
