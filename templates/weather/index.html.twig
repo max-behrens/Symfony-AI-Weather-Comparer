@@ -7,7 +7,7 @@
     <h1 class="text-3xl font-semibold text-center mb-8">Weather Fluctuation Calculator</h1>
 
     <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
-        <h2 class="text-2xl font-semibold mb-4">Find Monthly Weather By City</h2>
+        <h2 class="text-2xl font-semibold mb-4">Find Daily Average Weather By City</h2>
 
        {{ form_start(form, {
             'attr': {'id': 'weatherForm', 'method': 'get'},
@@ -29,7 +29,7 @@
 
     <!-- Weather Forecast Results (bottom horizontal) -->
     <div id="weatherForecastResults" class="hidden bottom-0 left-0 w-full bg-gray-50 p-5 rounded-lg shadow-md mt-10">
-        <h3 class="text-xl font-semibold mb-4 text-center"><span id="forecastTitle">Monthly Weather</span></h3>
+        <h3 class="text-xl font-semibold mb-4 text-center"><span id="forecastTitle">Daily Average Weather</span></h3>
         <div id="forecastContainer" class="flex space-x-4 overflow-x-auto justify-between"></div>
     </div>
 
@@ -103,7 +103,7 @@ document.addEventListener('DOMContentLoaded', function () {
             forecastContainer.innerHTML = '';
 
             // Update the forecast title with the entered country name.
-            document.getElementById('forecastTitle').textContent = `Monthly Forecast for ${cityInput}`;
+            document.getElementById('forecastTitle').textContent = `Daily Average Forecast for ${cityInput}`;
 
             // Ensure you're using data.forecasts and looping over that
             const forecasts = data.forecasts || [];
@@ -125,9 +125,9 @@ document.addEventListener('DOMContentLoaded', function () {
             console.log('HERE NOW');
 
             // Display the forecast differences
-            document.getElementById('tempRateOfChange').textContent = `Rate of Change Between Each Month: ${data.temperatureChanges.join(', ')}`;
-            document.getElementById('humidityRateOfChange').textContent = `Rate of Change Between Each Month: ${data.humidityChanges.join(', ')}`;
-            document.getElementById('pressureRateOfChange').textContent = `Rate of Change Between Each Month: ${data.pressureChanges.join(', ')}`;
+            document.getElementById('tempRateOfChange').textContent = `Rate of Change Between Each Day: ${data.temperatureChanges.join(', ')}`;
+            document.getElementById('humidityRateOfChange').textContent = `Rate of Change Between Each Day: ${data.humidityChanges.join(', ')}`;
+            document.getElementById('pressureRateOfChange').textContent = `Rate of Change Between Each Day: ${data.pressureChanges.join(', ')}`;
 
             document.getElementById('averageTempRateOfChange').textContent = `Overall Temperate Volaitility: ${data.averageTemperatureChanges}`;
             document.getElementById('averageHumRateOfChange').textContent = `Overall Humidity Volatility: ${data.averageHumidityChanges}`;
