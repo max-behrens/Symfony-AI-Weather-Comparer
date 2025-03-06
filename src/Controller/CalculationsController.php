@@ -85,70 +85,74 @@ class CalculationsController extends AbstractController
         ]);
     }
 
-    #[Route('/calculations/create', name: 'create', methods: ['POST'])]
+    #[Route('/calculations/create', name: 'create', methods: ['POST', 'GET'])]
     public function createCalculation(Request $request): Response
     {
+        // Create a new Calculation object
         $calculation = new Calculation();
+
+        // Create the form
         $formSave = $this->createForm(CalculationType::class, $calculation);
+
+        // Handle the request (bind the form data to the $calculation object)
         $formSave->handleRequest($request);
 
-        // Fetch URL parameters
-        $temperatureChanges = $request->query->get('temperatureChanges', 'N/A');
-        $averageTemperatureChanges = $request->query->get('averageTemperatureChanges', 'N/A');
-        $humidityChanges = $request->query->get('humidityChanges', 'N/A');
-        $averageHumidityChanges = $request->query->get('averageHumidityChanges', 'N/A');
-        $pressureChanges = $request->query->get('pressureChanges', 'N/A');
-        $averagePressureChanges = $request->query->get('averagePressureChanges', 'N/A');
-
-        $city = $request->query->get('city', 'N/A');
-
-        // Concatenate all parameters into a single formatted string
-        $calculationsData = sprintf(
-            "Temperature Changes: %s\nAverage Temperature Changes: %s\nHumidity Changes: %s\nAverage Humidity Changes: %s\nPressure Changes: %s\nAverage Pressure Changes: %s",
-            $temperatureChanges,
-            $averageTemperatureChanges,
-            $humidityChanges,
-            $averageHumidityChanges,
-            $pressureChanges,
-            $averagePressureChanges
-        );
-
-   
-        $calculation->setCalculations($calculationsData);
-
-
-
-        // Check and set default values for empty fields
-        if ($calculation->getAiResponse() === null || $calculation->getAiResponse() === '') {
-            $calculation->setAiResponse(''); // Set to an empty string or default value
-        } else {
-            $calculation->setAiResponse($calculationsData);
-        }
-
-
-        if ($city === null || $city === '') {
-            $calculation->setCountry(''); // Set to an empty string or default value
-        } else {
-            $calculation->setCountry($city);
-        }
-
-
-
-        
-
+        // Check if the form was submitted and is valid
         if ($formSave->isSubmitted() && $formSave->isValid()) {
+            // Only set the values from the form if they aren't already set (only override if null or empty)
+
+            // Check if the calculation fields are empty before setting the data
+            if (!$calculation->getCalculations()) {
+                // You could set the `calculationsData` here based on the URL parameters or other data
+                $temperatureChanges = $request->query->get('temperatureChanges', 'N/A');
+                $averageTemperatureChanges = $request->query->get('averageTemperatureChanges', 'N/A');
+                $humidityChanges = $request->query->get('humidityChanges', 'N/A');
+                $averageHumidityChanges = $request->query->get('averageHumidityChanges', 'N/A');
+                $pressureChanges = $request->query->get('pressureChanges', 'N/A');
+                $averagePressureChanges = $request->query->get('averagePressureChanges', 'N/A');
+                $city = $request->query->get('city', 'N/A');
+
+                // Concatenate all parameters into a single formatted string
+                $calculationsData = sprintf(
+                    "Temperature Changes: %s\nAverage Temperature Changes: %s\nHumidity Changes: %s\nAverage Humidity Changes: %s\nPressure Changes: %s\nAverage Pressure Changes: %s",
+                    $temperatureChanges,
+                    $averageTemperatureChanges,
+                    $humidityChanges,
+                    $averageHumidityChanges,
+                    $pressureChanges,
+                    $averagePressureChanges
+                );
+
+                $calculation->setCalculations($calculationsData);
+            }
+
+            // Set the AI Response and Country (fallback if empty)
+            if (!$calculation->getAiResponse()) {
+                $calculation->setAiResponse('');  // Set default value if no AI response
+            }
+
+            if (!$calculation->getCountry()) {
+                $calculation->setCountry($request->query->get('city', 'N/A'));  // Set country (fallback to city from query params)
+            }
+
+            // Persist the entity
             $this->entityManager->persist($calculation);
             $this->entityManager->flush();
 
+            // Add a success message
             $this->addFlash('success', 'Calculation created successfully!');
+
+            // Redirect to another page (e.g., a list of calculations)
             return $this->redirectToRoute('calculation_list');
         }
 
+        // Render the form view
         return $this->render('calculations/create-calculation.html.twig', [
             'formSave' => $formSave->createView(),
             'calculations' => $this->entityManager->getRepository(Calculation::class)->findAll(),
         ]);
     }
+
 
 
 
