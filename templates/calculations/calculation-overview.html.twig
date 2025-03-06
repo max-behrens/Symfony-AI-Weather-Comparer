@@ -13,13 +13,13 @@
 			</div>
 		{% endfor %}
 
-		<div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-5">
-			<h2 class="text-2xl font-semibold mb-4">Add a New Calculation</h2>
-			<form method="POST" action="{{ path('calculation_create') }}">
-				{{ form(form) }}
-					{# Display the form for adding a new Calculation #}
-				</form>
+
+			<div class="flex justify-center mt-8">
+				<a href="{{ path('calculation_create') }}" class="p-2 bg-blue-500 text-white rounded">
+					Add New Calculation
+				</a>
 			</div>
+
 
 			<div class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
 				<h2 class="text-2xl font-semibold mb-4">Calculation List</h2>
@@ -68,19 +68,5 @@
 
 		<script>
 
-			document.addEventListener('DOMContentLoaded', function () { // Check if there's calculation data in sessionStorage
-const calculationData = sessionStorage.getItem('calculationData');
-if (calculationData) {
-const data = JSON.parse(calculationData);
-
-// Populate the form fields
-document.querySelector('[name="calculation[calculations]"]').value = data.calculations;
-document.querySelector('[name="calculation[aiResponse]"]').value = data.aiResponse;
-document.querySelector('[name="calculation[country]"]').value = data.country;
-
-// Clear the sessionStorage
-sessionStorage.removeItem('calculationData');
-}
-});
 		</script>
 	{% endblock %}

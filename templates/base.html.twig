@@ -21,7 +21,7 @@
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-
+<body>
 <!-- Sidebar -->
 <div class="flex">
     <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white z-50">
@@ -40,6 +40,7 @@
         <div class="space-y-4 px-4 py-6">
             <a href="{{ path('weather_index') }}" data-turbo="false" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
             <a href="{{ path('calculation_overview') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
+            <a href="{{ path('calculation_create') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Add Calculation</a>
             <a href="{{ path('weather_test') }}" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test Page</a>
         </div>
     </div>
@@ -50,6 +51,7 @@
         {% block body %}{% endblock %}
     </div>
 </div>
+</body>
 
 
     

@@ -16,32 +16,39 @@ class CalculationType extends AbstractType
     {
         $builder
             ->add('calculations', TextareaType::class, [
+                'required' => false, // Not required since it may be hidden
                 'attr' => [
                     'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
-                    'rows' => '4'
+                    'rows' => '4',
+                    'placeholder' => 'Enter the calculations details...',
                 ],
                 'label' => 'Calculations',
             ])
             ->add('aiResponse', TextareaType::class, [
+                'required' => false,
                 'attr' => [
                     'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
-                    'rows' => '4'
+                    'rows' => '4',
+                    'placeholder' => 'AI Response information...',
                 ],
                 'label' => 'AI Response',
             ])
             ->add('country', TextareaType::class, [
+                'required' => false,
                 'attr' => [
-                    'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2'
+                    'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
+                    'placeholder' => 'Country related to the data...',
                 ],
                 'label' => 'Country',
             ])
             ->add('save', SubmitType::class, [
                 'attr' => [
-                    'class' => 'px-4 py-2 mt-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-75'
+                    'class' => 'mt-2 p-2 bg-blue-500 text-white rounded',
                 ],
                 'label' => 'Save Fluctuation Values',
             ]);
     }
+
 
     public function configureOptions(OptionsResolver $resolver)
     {

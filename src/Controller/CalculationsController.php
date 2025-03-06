@@ -44,7 +44,9 @@ class CalculationsController extends AbstractController
         $form->handleRequest($request);
         
         // Fetch all calculations from the database using EntityManager
-        $calculations = $this->entityManager->getRepository(Calculation::class)->findAll();
+        $calculations = $this->entityManager
+        ->getRepository(Calculation::class)
+        ->findBy([], ['id' => 'DESC']);
 
         // If form is submitted and valid, process the data
         if ($form->isSubmitted() && $form->isValid()) {
@@ -63,7 +65,7 @@ class CalculationsController extends AbstractController
 
         // Render the form and calculations to the Twig template
         return $this->render('calculations/calculation-overview.html.twig', [
-            'form' => $form->createView(),
+            'formSave' => $form->createView(),
             'calculations' => $calculations, // Pass the calculations to the template
         ]);
     }
@@ -73,11 +75,13 @@ class CalculationsController extends AbstractController
     public function listCalculations(): Response
     {
         // Fetch all calculations from the database using EntityManager
-        $calculations = $this->entityManager->getRepository(Calculation::class)->findAll();
+        $calculations = $this->entityManager
+        ->getRepository(Calculation::class)
+        ->findBy([], ['id' => 'DESC']);
 
         return $this->render('calculations/calculation-overview.html.twig', [
             'calculations' => $calculations,
-            'form' => $this->createForm(CalculationType::class)->createView(),
+            'formSave' => $this->createForm(CalculationType::class)->createView(),
         ]);
     }
 
@@ -85,27 +89,68 @@ class CalculationsController extends AbstractController
     public function createCalculation(Request $request): Response
     {
         $calculation = new Calculation();
-        $form = $this->createForm(CalculationType::class, $calculation);
-        $form->handleRequest($request);
+        $formSave = $this->createForm(CalculationType::class, $calculation);
+        $formSave->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Persist the calculation using EntityManager
+        // Fetch URL parameters
+        $temperatureChanges = $request->query->get('temperatureChanges', 'N/A');
+        $averageTemperatureChanges = $request->query->get('averageTemperatureChanges', 'N/A');
+        $humidityChanges = $request->query->get('humidityChanges', 'N/A');
+        $averageHumidityChanges = $request->query->get('averageHumidityChanges', 'N/A');
+        $pressureChanges = $request->query->get('pressureChanges', 'N/A');
+        $averagePressureChanges = $request->query->get('averagePressureChanges', 'N/A');
+
+        $city = $request->query->get('city', 'N/A');
+
+        // Concatenate all parameters into a single formatted string
+        $calculationsData = sprintf(
+            "Temperature Changes: %s\nAverage Temperature Changes: %s\nHumidity Changes: %s\nAverage Humidity Changes: %s\nPressure Changes: %s\nAverage Pressure Changes: %s",
+            $temperatureChanges,
+            $averageTemperatureChanges,
+            $humidityChanges,
+            $averageHumidityChanges,
+            $pressureChanges,
+            $averagePressureChanges
+        );
+
+   
+        $calculation->setCalculations($calculationsData);
+
+
+
+        // Check and set default values for empty fields
+        if ($calculation->getAiResponse() === null || $calculation->getAiResponse() === '') {
+            $calculation->setAiResponse(''); // Set to an empty string or default value
+        } else {
+            $calculation->setAiResponse($calculationsData);
+        }
+
+
+        if ($city === null || $city === '') {
+            $calculation->setCountry(''); // Set to an empty string or default value
+        } else {
+            $calculation->setCountry($city);
+        }
+
+
+
+        
+
+        if ($formSave->isSubmitted() && $formSave->isValid()) {
             $this->entityManager->persist($calculation);
             $this->entityManager->flush();
 
-            // Add a flash message indicating success
             $this->addFlash('success', 'Calculation created successfully!');
-
-            // Redirect to calculation list after creation
             return $this->redirectToRoute('calculation_list');
         }
 
-        // Render the form and the calculation list if form is not submitted or not valid
-        return $this->render('calculations/calculation-overview.html.twig', [
-            'form' => $form->createView(),
+        return $this->render('calculations/create-calculation.html.twig', [
+            'formSave' => $formSave->createView(),
             'calculations' => $this->entityManager->getRepository(Calculation::class)->findAll(),
         ]);
     }
+
+
 
     #[Route('/calculations/edit/{id}', name: 'edit', methods: ['GET', 'POST'])]
     public function editCalculation(Request $request, Calculation $calculation): Response

@@ -3,10 +3,10 @@
 weather_index:
     path: /weather
     controller: App\Controller\WeatherController::index
-    methods: GET
+    methods: [POST, GET]
 
-weather_get:
-    path: /weather
+weather_fetch:
+    path: /weather/forecast/{city}
     controller: App\Controller\WeatherController::getWeather
     methods: [POST, GET]  # Add POST here
 
@@ -43,7 +43,7 @@ calculation_list:
 calculation_create:
     path: /calculations/create
     controller: App\Controller\CalculationsController::createCalculation
-    methods: [POST]
+    methods: [GET, POST]
 
 calculation_edit:
     path: /calculations/edit/{id}

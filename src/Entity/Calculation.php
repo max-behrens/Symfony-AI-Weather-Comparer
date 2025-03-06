@@ -13,21 +13,27 @@ class Calculation
     #[ORM\Column(type: 'integer')]
     private int $id;
 
-    #[ORM\Column(type: 'text')]
-    protected string $calculations;
+    #[ORM\Column(type: 'text', nullable: true)]  // Make it nullable
+    protected ?string $calculations = null;  // Nullable string
 
-    #[ORM\Column(type: 'text')]
-    protected string $aiResponse;
+    #[ORM\Column(type: 'text', nullable: true)]
+    protected ?string $aiResponse = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    protected string $country;
+    protected ?string $country = null;
+
+    public function setAiResponse(string $aiResponse): self
+    {
+        $this->aiResponse = $aiResponse;
+        return $this;
+    }
 
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function getCountry(): string
+    public function getCountry(): ?string
     {
         return $this->country;
     }
@@ -37,24 +43,18 @@ class Calculation
         $this->country = $country;
     }
 
-
-    public function getCalculations(): string
+    public function getCalculations(): ?string  // Make it return nullable string
     {
         return $this->calculations;
     }
 
-    public function setCalculations(string $calculations): void
+    public function setCalculations(?string $calculations): void  // Accept nullable string
     {
         $this->calculations = $calculations;
     }
 
-    public function getAiResponse(): string
+    public function getAiResponse(): ?string
     {
         return $this->aiResponse;
-    }
-
-    public function setAiResponse(string $aiResponse): void
-    {
-        $this->aiResponse = $aiResponse;
     }
 }
