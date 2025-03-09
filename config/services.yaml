@@ -7,6 +7,8 @@ parameters:
     weather_api_key: '%env(WEATHER_API_KEY)%'
     chat_gpt_api_url: '%env(CHAT_GPT_API_URL)%'
     chat_gpt_api_key: '%env(CHAT_GPT_API_KEY)%'
+    openai_api_key: '%env(OPENAI_SECRET)%'
+    openai_organisation: '%env(OPENAI_ORGANISATION)%'
 
 services:
     # default configuration for services in *this* file
@@ -29,6 +31,12 @@ services:
     App\Service\WeatherService:
         arguments:
             $apiKey: '%weather_api_key%'
+
+
+    App\Service\AIExplanationService:
+        arguments:
+            $apiKey: '%openai_api_key%'
+            $organisation: '%openai_organisation%'
 
 
     # App\Service\ClimateExplanationService:

@@ -22,4 +22,7 @@ return [
     '@symfony/stimulus-bundle' => [
         'version' => '2.23.0',
     ],
+    '@hotwired/turbo' => [
+        'version' => '8.0.13',
+    ],
 ];

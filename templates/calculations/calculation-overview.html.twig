@@ -21,7 +21,7 @@
 			</div>
 
 
-			<div class="max-w-3xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
+			<div class="max-w-8xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
 				<h2 class="text-2xl font-semibold mb-4">Calculation List</h2>
 				<div
 					class="overflow-x-auto">
@@ -42,8 +42,8 @@
 									<tr class="border-b hover:bg-gray-50">
 										<td class="px-4 py-2">{{ calculation.id }}</td>
 										<td class="px-4 py-2">{{ calculation.country }}</td>
-										<td class="px-4 py-2">{{ calculation.calculations }}</td>
-										<td class="px-4 py-2">{{ calculation.aiResponse }}</td>
+										<td class="px-4 py-2">{{ calculation.calculations|replace({',' : '</p><p>'})|raw }}</td>
+										<td class="px-4 py-2">{{ calculation.aiResponse|replace({',' : '</p><p>'})|raw }}</td>
 										<td class="px-4 py-2">
 											<a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
 											|
@@ -62,11 +62,69 @@
 						</tbody>
 					</table>
 				</div>
+				{# Pagination controls #}
+				<div class="mt-4 flex justify-between items-center">
+					
+					{# Button to skip to the first page #}
+					<button 
+						id="first-page" 
+						onclick="navigatePage(1)"
+						class="bg-gray-300 px-4 py-2 rounded {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
+						type="button"
+						title="Go to first page">
+						« First
+					</button>
+					
+					{# Button to go to the previous page #}
+					<button 
+						id="prev-page" 
+						onclick="navigatePage({{ currentPage - 1 }})"
+						class="bg-gray-300 px-4 py-2 rounded {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
+						type="button"
+						title="Previous page">
+						‹ Prev
+					</button>
+
+					<span class="self-center">Page {{ currentPage }} of {{ totalPages }}</span>
+
+					{# Button to go to the next page #}
+					<button 
+						id="next-page" 
+						onclick="navigatePage({{ currentPage + 1 }})"
+						class="bg-gray-300 px-4 py-2 rounded {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
+						type="button"
+						title="Next page">
+						Next ›
+					</button>
+					
+					{# Button to skip to the last page #}
+					<button 
+						id="last-page" 
+						onclick="navigatePage({{ totalPages }})"
+						class="bg-gray-300 px-4 py-2 rounded {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
+						type="button"
+						title="Go to last page">
+						Last »
+					</button>
+				</div>
+
 			</div>
 		</div>
 
 
 		<script>
+
+		    /*
+			* Navigate to a different page.
+			*/
+			function navigatePage(page) {
+
+				// Create URL and redirect.
+				const url = new URL(window.location.href);
+				url.searchParams.set('page', page);
+
+				window.location.href = url.toString();
+			}
 
 		</script>
 	{% endblock %}

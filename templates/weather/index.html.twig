@@ -14,13 +14,18 @@
             </div>
         {% endif %}
         
-        {{ form_start(formFind) }}
-            <div class="mb-4">
-                {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 p-2 border border-gray-300 rounded w-full'}}) }}
-            </div>
-            {{ form_widget(formFind.submit, {'attr': {'class': 'mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600'}}) }}
-        {{ form_end(formFind) }}
+            {{ form_start(formFind, {
+                'method': 'GET',
+                'action': path('weather_index')
+            }) }}
+                <div class="mb-4">
+                    {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 p-2 border border-gray-300 rounded w-full'}}) }}
+                </div>
+                {{ form_widget(formFind.submit, {'attr': {'class': 'mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600'}}) }}
+            {{ form_end(formFind) }}
     </div>
+
+    {% set city = city is defined ? city : '' %}
     
     {% if showResults is defined and showResults %}
         <div id="weatherForecastResults" class="mb-8">
@@ -70,15 +75,19 @@
                 </div>
             </div>
             
-               {{ form_start(formSave, {'action': path('calculation_create', {
+               {{ form_start(formSave, {'attr': {'id': 'weather_form', 'action': path('calculation_create', {
                     'city': city,
                     'temperatureChanges': temperatureChanges|join(','),
                     'averageTemperatureChanges': averageTemperatureChanges,
                     'humidityChanges': humidityChanges|join(','),
                     'averageHumidityChanges': averageHumidityChanges,
                     'pressureChanges': pressureChanges|join(','),
-                    'averagePressureChanges': averagePressureChanges
-                })}) }}
+                    'averagePressureChanges': averagePressureChanges,
+                    'temperatureExplanation': temperatureExplanation,
+                    'humidityExplanation': humidityExplanation,
+                    'pressureExplanation': pressureExplanation,
+                })}})   }}
+
 
                 <div style="display:none;">
                     {{ form_widget(formSave.calculations, {'value': ''}) }}
@@ -92,10 +101,188 @@
 
         </div>
     {% endif %}
+
+    <div class="top-5 right-5 mt-12 z-50">
+        <!-- Chatbot Toggle Button -->
+        <button class="bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg chatbot-toggle">
+            💬 Chat with AI
+        </button>
+
+        <!-- Chatbot Window -->
+        <div class="bg-white border border-gray-300 shadow-lg rounded-lg p-4 w-full chatbot-window">
+            <div class="flex justify-between items-center border-b pb-2">
+                <h4 class="text-lg font-semibold">Chatbot</h4>
+                <button class="text-red-500 chatbot-close">✖</button>
+            </div>
+            
+            <!-- Chat Messages -->
+            <div class="chatbot-messages h-60 overflow-y-auto p-2">
+                <!-- Messages will be inserted here by JavaScript -->
+            </div>
+
+            <!-- Chat Input Field -->
+            <div class="mt-2 flex">
+                <input type="text" class="border px-2 py-1 flex-1 rounded-l chatbot-input" placeholder="Type a message..." />
+                <button class="bg-blue-500 text-white px-3 py-1 rounded-r chatbot-send">Send</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script>
+    // Prepare data directly from Twig variables
+    const city = "{{ city|default('') }}";
+    const calculationData = {
+        temperatureChanges: {{ temperatureChanges|default([])|json_encode|raw }},
+        averageTemperatureChanges: {{ averageTemperatureChanges|default(0)|json_encode|raw }},
+        humidityChanges: {{ humidityChanges|default([])|json_encode|raw }},
+        averageHumidityChanges: {{ averageHumidityChanges|default(0)|json_encode|raw }},
+        pressureChanges: {{ pressureChanges|default([])|json_encode|raw }},
+        averagePressureChanges: {{ averagePressureChanges|default(0)|json_encode|raw }},
+        temperatureExplanation: {{ temperatureExplanation|default('No explanation available')|json_encode|raw }},
+        humidityExplanation: {{ humidityExplanation|default('No explanation available')|json_encode|raw }},
+        pressureExplanation: {{ pressureExplanation|default('No explanation available')|json_encode|raw }}
+    };
+
+    console.log('CALC: ' , calculationData);
+
+
+    // Chatbot input and toggle elements
+    const chatInput = document.querySelector('.chatbot-input');
+    const chatbotMessages = document.querySelector('.chatbot-messages');
+    var isChatbotOpen = false;
+
+    // Toggle chatbot visibility
+    document.querySelector('.chatbot-toggle').addEventListener('click', toggleChatbot);
+    document.querySelector('.chatbot-close').addEventListener('click', toggleChatbot);
+
+    function toggleChatbot() {
+        document.querySelector('.chatbot-window').classList.toggle('hidden');
+        isChatbotOpen = !isChatbotOpen;
+        console.log('Chatbot open:', isChatbotOpen);
+    }
+
+    // Handle sending a message
+    document.querySelector('.chatbot-send').addEventListener('click', sendMessage);
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+
+    async function sendMessage() {
+        if (!chatInput || chatInput.value.trim() === "") return;
+
+        const userMessage = chatInput.value;
+        console.log('User message:', userMessage);
+        addMessageToChat(userMessage, true);
+        chatInput.value = '';
+
+        try {
+            // Send the message to the AI service
+            const aiResponse = await askAI(userMessage, city, calculationData);
+            console.log('AI response:', aiResponse);
+
+            // Display AI response
+            addMessageToChat(aiResponse, false);
+
+        } catch (error) {
+            console.error("Chatbot AI Error:", error);
+            addMessageToChat("Error: Unable to get AI response.", false);
+        }
+    }
+
+    // Add a message to the chat window
+    function addMessageToChat(message, isUser = false) {
+        const messageElement = document.createElement('div');
+        messageElement.className = isUser ? 'text-right mb-2' : 'text-left mb-2';
+        messageElement.innerHTML = `
+            <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'} 
+                inline-block px-4 py-2 rounded-lg max-w-xs">
+                ${message}
+            </div>`;
+        chatbotMessages.appendChild(messageElement);
+        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+    }
+
+    // Call the AI API
+    async function askAI(userInput, city = '', calculationResults = {}) {
+        const url = '/api/ask-openai';
+
+        const requestData = {
+            user_input: userInput,
+            city: city,
+            calculationResults: calculationResults
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(requestData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('AI Response received:', data);
+
+            return data.aiResponse || 'No response received from AI';
+        } catch (error) {
+            console.error('Fetch error:', error);
+            return 'Error: Unable to get AI response.';
+        }
+    }
+
+
+    document.querySelector('#weather_form').addEventListener('submit', function(event) {
+        // Get the chatbot messages content
+        const chatbotMessages = Array.from(document.querySelectorAll('.chatbot-messages div'))
+            .map(msg => msg.innerText) // Get the inner text of all message elements
+            .join('\n'); // Join them with a newline separator
+
+        // Get the current action path
+        let actionUrl = event.target.getAttribute('action');
+        
+        // Add chatbotMessages as a query parameter to the action URL
+        const urlWithChatbotMessages = new URL(actionUrl, window.location.origin);
+        urlWithChatbotMessages.searchParams.append('chatbotMessages', chatbotMessages);
+
+
+        // Update the form's action attribute with the new URL
+        event.target.setAttribute('action', urlWithChatbotMessages.toString());
+    });
+
+
+
+    // // Function to save chat messages to localStorage
+    // function saveChatMessages() {
+    //     const messages = Array.from(document.querySelectorAll('.chatbot-messages div'))
+    //         .map(msg => ({
+    //             content: msg.innerHTML,
+    //             isUser: msg.classList.contains('text-right')
+    //         }));
+    //     localStorage.setItem('chatMessages', JSON.stringify(messages));
+    // }
+
+    // // Function to load chat messages from localStorage
+    // function loadChatMessages() {
+    //     const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+    //     savedMessages.forEach(msg => addMessageToChat(msg.content, msg.isUser));
+    // }
+
+    // Call this function when the page loads
+    // window.addEventListener('DOMContentLoaded', loadChatMessages);
+
+
+    // // Save messages before form submission
+    // document.querySelector('#weatherForm').addEventListener('submit', saveChatMessages);
 
 
 </script>
+
 {% endblock %}

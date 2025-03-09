@@ -28,17 +28,17 @@ weather_climate_explanation:
 # CALCULATIONS
 
 
-calculation_overview:
-  path: /calculations/calculation_overview
-  controller: App\Controller\CalculationsController::index
-  methods: [GET, POST]
+# calculation_overview:
+#   path: /calculations/calculation_overview
+#   controller: App\Controller\CalculationsController::index
+#   methods: [GET, POST]
 
 
 
 calculation_list:
-    path: /calculations
+    path: /calculations/calculation_overview
     controller: App\Controller\CalculationsController::listCalculations
-    methods: [GET]
+    methods: [GET, POST]
 
 calculation_create:
     path: /calculations/create
@@ -53,4 +53,13 @@ calculation_edit:
 calculation_delete:
     path: /calculations/delete/{id}
     controller: App\Controller\CalculationsController::deleteCalculation
+    methods: [POST]
+
+
+
+# CHAT
+
+api_ask_openai:
+    path: /api/ask-openai
+    controller: App\Controller\DashboardAIController::askOpenAI
     methods: [POST]
