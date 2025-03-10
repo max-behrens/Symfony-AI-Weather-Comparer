@@ -54,7 +54,7 @@ class CalculationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Calculation::class,
-            'csrf_protection' => true,
+            'csrf_protection' => false,
         ]);
     }
 }

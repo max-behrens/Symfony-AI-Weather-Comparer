@@ -110,19 +110,11 @@ class WeatherService
             'averageHumidityChanges' => $averageHumidityChanges,
             'averagePressureChanges' => $averagePressureChanges,
         ];
-
-
-
-        ## Replace these with call to AIExplanationService
-        ## Remove getClimateExplanation method
-        // Get explanations
-        // $temperatureExplanation = $this->getClimateExplanation($averageTemperatureChanges, 'temperature');
-        // $humidityExplanation = $this->getClimateExplanation($averageHumidityChanges, 'humidity');
-        // $pressureExplanation = $this->getClimateExplanation($averagePressureChanges, 'pressure');
         
         $aiDataExplanations = $this->aiExplanationService->getAIWeatherExplanations($calculationResults, $city ?? '');
 
-        // Return data in the format expected by the Twig template
+        $this->logger->info('AI Explanations', ['explanations' => $aiDataExplanations]);
+
         return [
             'forecasts' => $forecasts,
             'city' => $city,
@@ -138,35 +130,5 @@ class WeatherService
             'showResults' => true
         ];
     }
-    
-    // Helper method to get climate explanations
-    // private function getClimateExplanation(float $value, string $type): string
-    // {
-    //     $explanations = [
-    //         'temperature' => [
-    //             'low' => 'Temperature is relatively stable with minimal fluctuations, suggesting consistent weather patterns.',
-    //             'medium' => 'Temperature shows moderate variability, which is typical for transitional seasons.',
-    //             'high' => 'Temperature fluctuations are significant, indicating unstable weather conditions.'
-    //         ],
-    //         'humidity' => [
-    //             'low' => 'Humidity levels are stable, suggesting consistent atmospheric moisture content.',
-    //             'medium' => 'Humidity shows moderate changes, which may result in occasional rainfall or changing comfort levels.',
-    //             'high' => 'Humidity fluctuations are significant, potentially indicating alternating periods of dry and wet conditions.'
-    //         ],
-    //         'pressure' => [
-    //             'low' => 'Atmospheric pressure is stable, suggesting consistent weather conditions.',
-    //             'medium' => 'Pressure shows moderate changes, which may indicate approaching weather fronts.',
-    //             'high' => 'Pressure fluctuations are significant, potentially indicating rapidly changing weather systems.'
-    //         ]
-    //     ];
-        
-    //     $category = 'medium';
-    //     if ($value < 3) {
-    //         $category = 'low';
-    //     } elseif ($value > 7) {
-    //         $category = 'high';
-    //     }
-        
-    //     return $explanations[$type][$category];
-    // }
+
 }

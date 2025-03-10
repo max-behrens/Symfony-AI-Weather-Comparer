@@ -1,0 +1,23 @@
+{
+    "name": "symfony-weather-app",
+    "version": "1.0.0",
+    "description": "Symfony 7 Weather Application",
+    "private": true,
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "deploy": "deploy.bat"
+    },
+    "dependencies": {
+        "@symfony/stimulus-bundle": "^2.23.0",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "vue": "^3.3.4"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-react": "^4.0.4",
+        "@vitejs/plugin-vue": "^4.2.3",
+        "vite": "^4.4.9",
+        "vite-plugin-symfony": "^0.7.3"
+    }
+}

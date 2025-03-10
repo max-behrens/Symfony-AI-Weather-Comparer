@@ -41,7 +41,8 @@ class AIExplanationService
                         
                         Also, don't attempt to add the city to your description, as you do not have it in your training data.
                         Please split your answers into 3 sections with the following titles (where your response to each of these goes within the corresponding title), 
-                        'Temperature', 'Humidity' and 'Pressure'."],
+                        'Temperature', 'Humidity' and 'Pressure'."
+                    ],
                 ]
             ],
             'verify_peer' => false, // Similar to withoutVerifying() in Laravel
@@ -61,7 +62,20 @@ class AIExplanationService
 
     private function extractExplanation($aiResponse, $type)
     {
-        preg_match("/$type:\s*(.+?)(?:\n|$)/i", $aiResponse, $matches);
+        $this->logger->info('EXTRACT ' . $type, ['aiResponse' => $aiResponse, 'type' => $type]);
+    
+        // Decode the JSON response to access the "content" field
+        $responseArray = json_decode($aiResponse, true);
+        $content = $responseArray['choices'][0]['message']['content'] ?? '';
+    
+        $this->logger->info('EXTRACTED CONTENT', ['content' => $content]);
+    
+        // Regex to match the relevant explanation under the specified type
+        preg_match("/\*\*{$type}:\*\*\s*(.*?)(?=\n\*\*|\n*$)/is", $content, $matches);
+    
+        $this->logger->info('REGEX MATCH', ['matches' => $matches]);
+    
         return $matches[1] ?? "No explanation available.";
     }
+    
 }

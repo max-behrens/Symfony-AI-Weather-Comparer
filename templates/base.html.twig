@@ -2,12 +2,12 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         
         <!-- Add this line for the base tag -->
         <base href="{{ asset('') }}">
-
         <!-- TailwindCSS -->
         <script src="https://cdn.tailwindcss.com"></script>
         
@@ -15,29 +15,27 @@
         <link href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.0/flowbite.min.js"></script>
         
-        {% block stylesheets %}{% endblock %}
-
+        {% block stylesheets %}
+            {# {{ vite_entry_link_tags('app') }} #}
+        {% endblock %}
         {% block javascripts %}
             {{ importmap('app') }}
+            {# {{ vite_entry_script_tags('app') }} #}
         {% endblock %}
     </head>
 <body>
-<!-- Sidebar -->
-<div class="flex">
-    <div class="fixed inset-y-0 left-0 w-64 bg-gray-800 text-white z-50">
-        <!-- Mobile Sidebar Toggle Button -->
-        <button id="sidebar-toggle" class="sm:hidden p-2 bg-gray-800 text-white rounded-md">
-            <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-
-        <!-- Sidebar content -->
-        <div class="flex items-center justify-center p-5">
-            <a href="{{ path('weather_index') }}" class="text-2xl py-2 px-4 font-bold text-white">Weather Calculator</a>
+    <!-- Mobile Top Nav -->
+    <div class="md:hidden bg-gray-800 text-white w-full">
+        <div class="flex items-center justify-between p-4">
+            <a href="{{ path('weather_index') }}" class="text-xl font-bold text-white">Weather Calculator</a>
+            <button id="mobile-menu-toggle" class="p-2 rounded-md focus:outline-none">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
-        
-        <div class="space-y-4 px-4 py-6">
+        <!-- Mobile menu, show/hide based on menu state -->
+        <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1">
             <a href="{{ path('weather_index') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
             <a href="{{ path('calculation_list') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
             <a href="{{ path('calculation_create') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Add Calculation</a>
@@ -45,28 +43,43 @@
         </div>
     </div>
 
-    <!-- Page Content -->
-    <div class="flex-1 ml-64 p-5 overflow-x-hidden">
-        {% block body %}
+    <div class="flex">
+        <!-- Desktop Sidebar - hidden on mobile -->
+        <div class="hidden md:block md:fixed md:inset-y-0 md:left-0 md:w-64 md:bg-gray-800 md:text-white md:z-50">
+            <div class="flex items-center justify-center p-5">
+                <a href="{{ path('weather_index') }}" class="text-2xl py-2 px-4 font-bold text-white">Weather Calculator</a>
+            </div>
+            
+            <div class="space-y-4 px-4 py-6">
+                <a href="{{ path('weather_index') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
+                <a href="{{ path('calculation_list') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
+                <a href="{{ path('calculation_create') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Add Calculation</a>
+                <a href="{{ path('weather_test') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test Page</a>
+            </div>
+        </div>
+        
+        <!-- Page Content -->
+        <div class="w-full md:ml-64 p-5 overflow-x-hidden mt-0 md:mt-0">
+            {% block body %}
                 <turbo-frame id="main">
                     <!-- Content will load here -->
                 </turbo-frame>
-        
-        {% endblock %}
+            {% endblock %}
+        </div>
     </div>
-</div>
-</body>
-
-
     
-
-    <!-- Sidebar Mobile Toggle Script -->
+    <!-- Mobile Menu Toggle Script -->
     <script>
-        const sidebar = document.querySelector('.w-64');
-        const sidebarToggle = document.getElementById('sidebar-toggle');
-        
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuToggle && mobileMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
         });
     </script>
+</body>
 </html>

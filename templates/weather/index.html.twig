@@ -50,7 +50,7 @@
                 <p>Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
                 <p>Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
                 <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">What This Means:</h3>
+                    <h3 class="font-semibold">OpenAI Explanation:</h3>
                     <p>{{ temperatureExplanation }}</p>
                 </div>
             </div>
@@ -60,7 +60,7 @@
                 <p>Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
                 <p>Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
                 <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">What This Means:</h3>
+                    <h3 class="font-semibold">OpenAI Explanation:</h3>
                     <p>{{ humidityExplanation }}</p>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                 <p>Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
                 <p>Overall Pressure Volatility: {{ averagePressureChanges }}</p>
                 <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">What This Means:</h3>
+                    <h3 class="font-semibold">OpenAI Explanation:</h3>
                     <p>{{ pressureExplanation }}</p>
                 </div>
             </div>
@@ -131,6 +131,9 @@
 </div>
 
 <script>
+
+document.addEventListener('DOMContentLoaded', function() {
+
     // Prepare data directly from Twig variables
     const city = "{{ city|default('') }}";
     const calculationData = {
@@ -259,6 +262,10 @@
 
 
 
+    // TODO: Find way to persist chatbot messages after a symfony form reload,
+    // and to only clear messages after revisiting the weather index when the form is not submitted.
+
+
     // // Function to save chat messages to localStorage
     // function saveChatMessages() {
     //     const messages = Array.from(document.querySelectorAll('.chatbot-messages div'))
@@ -281,7 +288,7 @@
 
     // // Save messages before form submission
     // document.querySelector('#weatherForm').addEventListener('submit', saveChatMessages);
-
+});
 
 </script>
 
