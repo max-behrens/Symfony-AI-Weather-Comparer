@@ -5,16 +5,16 @@
 {% block body %}
     <div class="bg-gray-900 text-white p-5 min-h-screen">
         <div class="container mx-auto mt-10">
-            <h1 class="text-3xl font-semibold text-center mb-8 text-white">Add a New Calculation</h1>
+            <h1 class="text-lg font-semibold text-center mb-8 text-white">Add a New Calculation</h1>
 
             {% for message in app.flashes('success') %}
-            	<div class="max-w-md mx-auto rounded-lg bg-blue-900 border border-blue-600 text-center text-blue-200 px-4 py-3 relative mb-4">
+            	<div class="max-w-md mx-auto rounded-lg bg-blue-900 border border-blue-600 text-xs text-center text-blue-200 px-4 py-3 relative mb-4">
                     {{ message }}
                 </div>
             {% endfor %}
 
             <div class="max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-5 border border-gray-700">
-                <h2 class="text-2xl font-semibold text-white mb-4">Add a New Calculation</h2>
+                <h2 class="text-sm font-semibold text-white mb-4">Enter Calculation Details</h2>
                 <form method="POST" action="{{ path('calculation_create') }}">
                     {{ form(formSave) }}  {# Display the form for adding a new Calculation #}
                 </form>

@@ -4,11 +4,11 @@
 
 {% block body %}
 <div class="mx-auto p-20 dark:bg-gray-900 dark:text-white min-h-screen">
-        <h1 class="text-2xl font-semibold text-center mb-8 text-white">Forecast Fluctuation API</h1>
+        <h1 class="text-xl font-semibold text-center mb-8 text-white">Forecast Fluctuation API</h1>
     
     <!-- Search Card -->
     <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8 dark:bg-gray-800 dark:border-gray-700">
-        <h1 class="text-lg font-semibold text-white mb-5">Weather Forecast</h1>
+        <h1 class="text-md font-semibold text-white mb-5">Weather Forecast</h1>
         
         {% if error is defined %}
             <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
@@ -95,11 +95,11 @@
             <!-- Save Form -->
             {{ form_start(formSave, {'attr': {'id': 'weather_form', 'action': path('calculation_create', {
                 'city': city,
-                'temperatureChanges': temperatureChanges|join(','),
+                'temperatureChanges': temperatureChanges|join('|'),
                 'averageTemperatureChanges': averageTemperatureChanges,
-                'humidityChanges': humidityChanges|join(','),
+                'humidityChanges': humidityChanges|join('|'),
                 'averageHumidityChanges': averageHumidityChanges,
-                'pressureChanges': pressureChanges|join(','),
+                'pressureChanges': pressureChanges|join('|'),
                 'averagePressureChanges': averagePressureChanges,
                 'temperatureExplanation': temperatureExplanation,
                 'humidityExplanation': humidityExplanation,
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Update the spinner's style
         spinner.style.position = 'absolute';
-        spinner.style.top = '50%';
+        spinner.style.top = '280px';
         spinner.style.left = '50%';
         spinner.style.transform = 'translate(-50%, -50%)';
         spinner.style.width = '100%';
