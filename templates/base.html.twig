@@ -24,39 +24,41 @@
 <body class="bg-gray-100">
 
     <div class="flex flex-col sm:flex-row">
-        <!-- Sidebar -->
-        <aside class="w-full h-auto sm:w-64 bg-gray-800 text-white sm:fixed sm:left-0 sm:top-0 sm:bottom-0">
-            <div class="p-4 pt-10">
-                <a href="{{ path('weather_index') }}" class="text-2xl text-gray-300 rounded-lg font-semibold p-2 max-w-xs truncate">Weather Calculator</a>
+       <!-- Sidebar - reduce width from 64 to 48 -->
+    <aside class="w-full h-auto sm:w-48 bg-gray-800 text-white sm:fixed sm:left-0 sm:top-0 sm:bottom-0">
+        <div class="p-4 pt-10">
+            <!-- Reduce title size from 2xl to lg -->
+            <a href="{{ path('weather_index') }}" class="text-md text-gray-300 rounded-lg font-semibold p-2 max-w-xs truncate">Weather Calculator</a>
+        </div>
+        <nav class="px-4 space-y-2">
+            <!-- Add text-sm to all navigation links -->
+            <a href="{{ path('weather_index') }}" class="flex items-center p-2 text-xs text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                <span>Fluctuation Calculator</span>
+            </a>
+
+            <!-- Make dropdown button text smaller -->
+            <button id="dropdownButton" class="flex items-center justify-between w-full p-2 text-xs text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                <span>Calculation Manager</span>
+                <svg id="dropdownArrow" class="w-4 h-4 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+
+            <!-- Make dropdown menu items smaller -->
+            <div id="dropdownMenu" class="hidden space-y-1 pl-4">
+                <a href="{{ path('calculation_list') }}" class="flex items-center p-2 text-xs text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                    <span>View Calculations</span>
+                </a>
+                <a href="{{ path('calculation_create') }}" class="flex items-center p-2 text-xs text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                    <span>Add Calculation</span>
+                </a>
             </div>
-            <nav class="px-4 space-y-2">
-                <a href="{{ path('weather_index') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
-                    <span>Fluctuation Calculator</span>
-                </a>
 
-                <!-- Dropdown Parent -->
-                <button id="dropdownButton" class="flex items-center justify-between w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
-                    <span>Calculation Manager</span>
-                    <svg id="dropdownArrow" class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
+            <a href="{{ path('weather_test') }}" class="flex items-center p-2 text-xs text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                <span>Test Page</span>
+            </a>
 
-                <!-- Dropdown Menu -->
-                <div id="dropdownMenu" class="hidden space-y-1 pl-6">
-                    <a href="{{ path('calculation_list') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
-                        <span>View Calculations</span>
-                    </a>
-                    <a href="{{ path('calculation_create') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
-                        <span>Add Calculation</span>
-                    </a>
-                </div>
-
-                <a href="{{ path('weather_test') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
-                    <span>Test Page</span>
-                </a>
-            </nav>
-
+            
             <!-- Settings Icon at the bottom (mobile fixed) -->
             <div class="absolute sm:bottom-4 left-1/2 transform -translate-x-1/2 p-2 bg-gray-700 rounded-full hover:bg-gray-600 mb-10 sm:mb-0">
                 <!-- FontAwesome Gear Icon -->
@@ -70,12 +72,16 @@
             </div>
 
             <!-- Label below the nav (mobile only) -->
-            <label class="block text-gray-500 text-xs mt-1 mb-4 m-5 p-1">Max Behrens</label>
+            <label class="block text-gray-500 text-xs mt-1 mb-4 m-1 p-1">Max Behrens</label>
+        </nav>
 
-        </aside>
 
-        <!-- Page Content -->
-        <main class="flex-1 ml-0 sm:ml-64 min-h-screen">
+        <!-- Also adjust the main content margin to match the new sidebar width -->
+        <!-- This would go in the main element -->
+    </aside>
+
+    <!-- Adjust the main content margin to match the new sidebar width -->
+    <main class="flex-1 ml-0 sm:ml-48 min-h-screen">
             {% block body %}
                 <turbo-frame id="main">
                     <!-- Content will load here -->

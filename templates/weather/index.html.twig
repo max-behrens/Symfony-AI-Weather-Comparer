@@ -4,11 +4,11 @@
 
 {% block body %}
 <div class="mx-auto p-20 dark:bg-gray-900 dark:text-white min-h-screen">
-    <h1 class="text-4xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">Forecast Fluctuation API</h1>
+        <h1 class="text-2xl font-semibold text-center mb-8 text-white">Forecast Fluctuation API</h1>
     
     <!-- Search Card -->
     <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8 dark:bg-gray-800 dark:border-gray-700">
-        <h1 class="text-2xl font-extrabold mb-4 text-gray-800 dark:text-white">Weather Forecast</h1>
+        <h1 class="text-lg font-semibold text-white mb-5">Weather Forecast</h1>
         
         {% if error is defined %}
             <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
@@ -42,12 +42,12 @@
     {% if showResults is defined and showResults %}
         <!-- Forecast Results Section -->
         <div id="weatherForecastResults" class="mb-8">
-            <h2 id="forecastTitle" class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Daily Average Forecast for {{ city }}</h2>
+            <h2 id="forecastTitle" class="text-md font-bold mb-4 text-gray-800 dark:text-white">Daily Average Forecast for {{ city }}</h2>
             
             <div id="forecastContainer" class="flex flex-wrap gap-4 w-full">
                 {% for forecast in forecasts %}
                     <div class="flex-1 min-w-[280px] max-w-[300px] bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 p-5">
-                        <h4 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white">{{ forecast.time }}</h4>
+                        <h4 class="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">{{ forecast.time }}</h4>
                         <div class="font-normal text-gray-700 dark:text-gray-400">
                             <p class="flex items-center py-1"><span class="font-medium w-28">Temperature:</span> {{ forecast.temperature|number_format(2) }}°C</p>
                             <p class="flex items-center py-1"><span class="font-medium w-28">Feels Like:</span> {{ forecast.feels_like|number_format(2) }}°C</p>
@@ -63,7 +63,7 @@
         <!-- Weather Analysis Results -->
         <div id="weatherCalculationResults" class="space-y-6">
             <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Temperature Analysis</h2>
+                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Temperature Analysis</h2>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
                 <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
@@ -73,7 +73,7 @@
             </div>
 
             <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Humidity Analysis</h2>
+                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Humidity Analysis</h2>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
                 <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
@@ -83,7 +83,7 @@
             </div>
 
             <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Pressure Analysis</h2>
+                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Pressure Analysis</h2>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
                 <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Pressure Volatility: {{ averagePressureChanges }}</p>
                 <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">

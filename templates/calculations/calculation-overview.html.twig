@@ -5,7 +5,7 @@
 {% block body %}
 <div class="bg-gray-900 text-white p-20 min-h-screen">
     <div class="container mx-auto">
-        <h1 class="text-3xl font-semibold text-center mb-8 text-white">Calculation Manager</h1>
+        <h1 class="text-2xl font-semibold text-center mb-8 text-white">Calculation Manager</h1>
 
         {% for message in app.flashes('success') %}
             <div class="max-w-md mx-auto rounded-lg bg-blue-900 border border-blue-600 text-center text-blue-200 px-4 py-3 relative mb-4">
@@ -16,7 +16,7 @@
         <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
             <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 p-4 bg-gray-800">
                 <div>
-                    <h2 class="text-2xl font-semibold text-white">Calculation List</h2>
+                    <h2 class="text-md font-semibold text-white">Calculation List</h2>
                 </div>
                 <div>
                     <a href="{{ path('calculation_create') }}" class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800">
