@@ -6,79 +6,92 @@
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         
-        <!-- Add this line for the base tag -->
         <base href="{{ asset('') }}">
-        <!-- TailwindCSS -->
         <script src="https://cdn.tailwindcss.com"></script>
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         
-        <!-- Flowbite -->
         <link href="https://unpkg.com/flowbite@1.5.0/dist/flowbite.min.css" rel="stylesheet">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.0/flowbite.min.js"></script>
         
-        {% block stylesheets %}
-            {# {{ vite_entry_link_tags('app') }} #}
-        {% endblock %}
+        {% block stylesheets %}{% endblock %}
         {% block javascripts %}
             {{ importmap('app') }}
-            {# {{ vite_entry_script_tags('app') }} #}
         {% endblock %}
     </head>
-<body>
-    <!-- Mobile Top Nav -->
-    <div class="md:hidden bg-gray-800 text-white w-full">
-        <div class="flex items-center justify-between p-4">
-            <a href="{{ path('weather_index') }}" class="text-xl font-bold text-white">Weather Calculator</a>
-            <button id="mobile-menu-toggle" class="p-2 rounded-md focus:outline-none">
-                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                </svg>
-            </button>
-        </div>
-        <!-- Mobile menu, show/hide based on menu state -->
-        <div id="mobile-menu" class="hidden px-2 pt-2 pb-3 space-y-1">
-            <a href="{{ path('weather_index') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
-            <a href="{{ path('calculation_list') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
-            <a href="{{ path('calculation_create') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Add Calculation</a>
-            <a href="{{ path('weather_test') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test Page</a>
-        </div>
-    </div>
+<body class="bg-gray-100">
 
-    <div class="flex">
-        <!-- Desktop Sidebar - hidden on mobile -->
-        <div class="hidden md:block md:fixed md:inset-y-0 md:left-0 md:w-64 md:bg-gray-800 md:text-white md:z-50">
-            <div class="flex items-center justify-center p-5">
-                <a href="{{ path('weather_index') }}" class="text-2xl py-2 px-4 font-bold text-white">Weather Calculator</a>
+    <div class="flex flex-col sm:flex-row">
+        <!-- Sidebar -->
+        <aside class="w-full h-auto sm:w-64 bg-gray-800 text-white sm:fixed sm:left-0 sm:top-0 sm:bottom-0">
+            <div class="p-4 pt-10">
+                <a href="{{ path('weather_index') }}" class="text-2xl text-gray-300 rounded-lg font-semibold p-2 max-w-xs truncate">Weather Calculator</a>
             </div>
-            
-            <div class="space-y-4 px-4 py-6">
-                <a href="{{ path('weather_index') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Fluctuation Calculator</a>
-                <a href="{{ path('calculation_list') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Calculation Manager</a>
-                <a href="{{ path('calculation_create') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Add Calculation</a>
-                <a href="{{ path('weather_test') }}" data-turbo-frame="main" class="text-gray-300 hover:bg-gray-700 hover:text-white block py-2 px-4 rounded-md text-sm">Test Page</a>
+            <nav class="px-4 space-y-2">
+                <a href="{{ path('weather_index') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                    <span>Fluctuation Calculator</span>
+                </a>
+
+                <!-- Dropdown Parent -->
+                <button id="dropdownButton" class="flex items-center justify-between w-full p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                    <span>Calculation Manager</span>
+                    <svg id="dropdownArrow" class="w-5 h-5 transition-transform transform rotate-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div id="dropdownMenu" class="hidden space-y-1 pl-6">
+                    <a href="{{ path('calculation_list') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                        <span>View Calculations</span>
+                    </a>
+                    <a href="{{ path('calculation_create') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                        <span>Add Calculation</span>
+                    </a>
+                </div>
+
+                <a href="{{ path('weather_test') }}" class="flex items-center p-2 text-gray-300 rounded-lg hover:bg-gray-700 hover:text-white">
+                    <span>Test Page</span>
+                </a>
+            </nav>
+
+            <!-- Settings Icon at the bottom (mobile fixed) -->
+            <div class="absolute sm:bottom-4 left-1/2 transform -translate-x-1/2 p-2 bg-gray-700 rounded-full hover:bg-gray-600 mb-10 sm:mb-0">
+                <!-- FontAwesome Gear Icon -->
+                <i class="fas fa-cog text-gray-300"></i>
+
+                <!-- Tooltip (hidden for now) -->
+                <div id="tooltip-settings" role="tooltip" class="absolute invisible z-10 py-2 px-3 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm opacity-0 transition-opacity duration-300 tooltip bottom-full mb-2 left-1/2 transform -translate-x-1/2">
+                    Settings
+                    <div class="tooltip-arrow" data-popper-arrow></div>
+                </div>
             </div>
-        </div>
-        
+
+            <!-- Label below the nav (mobile only) -->
+            <label class="block text-gray-500 text-xs mt-1 mb-4 m-5 p-1">Max Behrens</label>
+
+        </aside>
+
         <!-- Page Content -->
-        <div class="w-full md:ml-64 p-5 overflow-x-hidden mt-0 md:mt-0">
+        <main class="flex-1 ml-0 sm:ml-64 min-h-screen">
             {% block body %}
                 <turbo-frame id="main">
                     <!-- Content will load here -->
                 </turbo-frame>
             {% endblock %}
-        </div>
+        </main>
     </div>
-    
-    <!-- Mobile Menu Toggle Script -->
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            if (mobileMenuToggle && mobileMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    mobileMenu.classList.toggle('hidden');
-                });
-            }
+            const dropdownButton = document.getElementById('dropdownButton');
+            const dropdownMenu = document.getElementById('dropdownMenu');
+            const dropdownArrow = document.getElementById('dropdownArrow');
+
+            dropdownButton.addEventListener('click', function() {
+                dropdownMenu.classList.toggle('hidden');
+                dropdownArrow.classList.toggle('rotate-180');
+            });
         });
     </script>
 </body>

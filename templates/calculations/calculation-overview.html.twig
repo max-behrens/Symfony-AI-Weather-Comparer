@@ -1,157 +1,169 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Calculation Manager
-{% endblock %}
+{% block title %}Calculation Manager{% endblock %}
 
 {% block body %}
-	<div class="container mx-auto mt-10 p-5">
-		<h1 class="text-3xl font-semibold text-center mb-8">Calculation Manager</h1>
+<div class="bg-gray-900 text-white p-20 min-h-screen">
+    <div class="container mx-auto">
+        <h1 class="text-3xl font-semibold text-center mb-8 text-white">Calculation Manager</h1>
 
-		{% for message in app.flashes('success') %}
-            <div class="max-w-md mx-auto rounded-lg bg-green-100 border border-green-400 text-center text-green-700 px-4 py-3 relative mb-4">
-				{{ message }}
-			</div>
-		{% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="max-w-md mx-auto rounded-lg bg-blue-900 border border-blue-600 text-center text-blue-200 px-4 py-3 relative mb-4">
+                {{ message }}
+            </div>
+        {% endfor %}
 
-		<div class="flex justify-center mt-8">
-			<a href="{{ path('calculation_create') }}" class="p-2 bg-blue-500 text-white rounded">
-				Add New Calculation
-			</a>
-		</div>
+        <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+            <div class="flex items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 p-4 bg-gray-800">
+                <div>
+                    <h2 class="text-2xl font-semibold text-white">Calculation List</h2>
+                </div>
+                <div>
+                    <a href="{{ path('calculation_create') }}" class="inline-flex items-center text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-blue-800">
+                        <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                        </svg>
+                        Add New Calculation
+                    </a>
+                </div>
+            </div>
+            
+            {% if calculations is not empty %}
+                <!-- Mobile view (card-based layout) -->
+                <div class="md:hidden space-y-6 p-4 bg-gray-800">
+                    {% for calculation in calculations %}
+                        <div class="border border-gray-700 rounded-lg p-4 shadow-sm bg-gray-700">
+                            <div class="grid grid-cols-2 gap-2 mb-2">
+                                <div class="font-medium text-gray-300">ID:</div>
+                                <div class="text-white">{{ calculation.id }}</div>
+                                
+                                <div class="font-medium text-gray-300">City:</div>
+                                <div class="text-white">{{ calculation.country }}</div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="font-medium text-gray-300 mb-1">Calculations:</div>
+                                <div class="bg-gray-800 p-2 rounded border border-gray-600 text-sm text-white">
+                                    {{ calculation.calculations|replace({',' : '</p><p>'})|raw }}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-3">
+                                <div class="font-medium text-gray-300 mb-1">AI Response:</div>
+                                <div class="bg-gray-800 p-2 rounded border border-gray-600 text-sm text-white">
+                                    {{ calculation.aiResponse|replace({',' : '</p><p>'})|raw }}
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 flex space-x-4 justify-center">
+                                <a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-400">Edit</a>
+                                <form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="text-red-500 hover:text-red-400" onclick="return confirm('Are you sure?');">Delete</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Desktop view (table layout) -->
+                <div class="hidden md:block">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs uppercase bg-gray-700 text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">ID</th>
+                                <th scope="col" class="px-6 py-3">City</th>
+                                <th scope="col" class="px-6 py-3">Calculations</th>
+                                <th scope="col" class="px-6 py-3">AI Response</th>
+                                <th scope="col" class="px-6 py-3">
+                                    <span class="sr-only">Actions</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for calculation in calculations %}
+                                <tr class="border-b bg-gray-800 border-gray-700 hover:bg-gray-600/50">
+                                    <td class="px-6 py-4">{{ calculation.id }}</td>
+                                    <td class="px-6 py-4">{{ calculation.country }}</td>
+                                    <td class="px-6 py-4">{{ calculation.calculations|replace({',' : '</p><p>'})|raw }}</td>
+                                    <td class="px-6 py-4">{{ calculation.aiResponse|replace({',' : '</p><p>'})|raw }}</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="font-medium text-blue-500 hover:underline mr-3">Edit</a>
+                                        <form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
+                                            <input type="hidden" name="_method" value="DELETE">
+                                            <button type="submit" class="font-medium text-red-500 hover:underline" onclick="return confirm('Are you sure?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-4 bg-gray-800 text-gray-400">No calculations available.</div>
+            {% endif %}
+            
+            {# Pagination controls #}
+            <div class="flex flex-wrap justify-between items-center gap-2 p-4 bg-gray-800">
+                {# Button to skip to the first page #}
+                <button 
+                    id="first-page" 
+                    onclick="navigatePage(1)"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
+                    type="button"
+                    {% if currentPage == 1 %}disabled{% endif %}
+                    title="Go to first page">
+                    « First
+                </button>
+                
+                {# Button to go to the previous page #}
+                <button 
+                    id="prev-page" 
+                    onclick="navigatePage({{ currentPage - 1 }})"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
+                    type="button"
+                    {% if currentPage == 1 %}disabled{% endif %}
+                    title="Previous page">
+                    ‹ Prev
+                </button>
 
-		<div class="max-w-8xl mx-auto mt-8 bg-white rounded-lg shadow-lg p-5">
-			<h2 class="text-2xl font-semibold mb-4">Calculation List</h2>
-			
-			{% if calculations is not empty %}
-				<!-- Mobile view (card-based layout) -->
-				<div class="md:hidden space-y-6">
-					{% for calculation in calculations %}
-						<div class="border rounded-lg p-4 shadow-sm bg-gray-50">
-							<div class="grid grid-cols-2 gap-2 mb-2">
-								<div class="font-medium text-gray-700">ID:</div>
-								<div>{{ calculation.id }}</div>
-								
-								<div class="font-medium text-gray-700">Country:</div>
-								<div>{{ calculation.country }}</div>
-							</div>
-							
-							<div class="mt-3">
-								<div class="font-medium text-gray-700 mb-1">Calculations:</div>
-								<div class="bg-white p-2 rounded border text-sm">
-									{{ calculation.calculations|replace({',' : '</p><p>'})|raw }}
-								</div>
-							</div>
-							
-							<div class="mt-3">
-								<div class="font-medium text-gray-700 mb-1">AI Response:</div>
-								<div class="bg-white p-2 rounded border text-sm">
-									{{ calculation.aiResponse|replace({',' : '</p><p>'})|raw }}
-								</div>
-							</div>
-							
-							<div class="mt-4 flex space-x-4 justify-center">
-								<a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
-								<form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
-									<input type="hidden" name="_method" value="DELETE">
-									<button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure?');">Delete</button>
-								</form>
-							</div>
-						</div>
-					{% endfor %}
-				</div>
-				
-				<!-- Desktop view (table layout) -->
-				<div class="hidden md:block overflow-x-auto">
-					<table class="min-w-full table-auto border-collapse text-sm text-left text-gray-500">
-						<thead class="bg-gray-100 text-xs uppercase font-medium text-gray-700">
-							<tr>
-								<th class="px-4 py-3 border-b">ID</th>
-								<th class="px-4 py-3 border-b">Country</th>
-								<th class="px-4 py-3 border-b">Calculations</th>
-								<th class="px-4 py-3 border-b">AI Response</th>
-								<th class="px-4 py-3 border-b">Actions</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for calculation in calculations %}
-								<tr class="border-b hover:bg-gray-50">
-									<td class="px-4 py-2">{{ calculation.id }}</td>
-									<td class="px-4 py-2">{{ calculation.country }}</td>
-									<td class="px-4 py-2">{{ calculation.calculations|replace({',' : '</p><p>'})|raw }}</td>
-									<td class="px-4 py-2">{{ calculation.aiResponse|replace({',' : '</p><p>'})|raw }}</td>
-									<td class="px-4 py-2">
-										<a href="{{ path('calculation_edit', {id: calculation.id}) }}" class="text-blue-500 hover:text-blue-700">Edit</a>
-										|
-										<form method="post" action="{{ path('calculation_delete', {id: calculation.id}) }}" style="display:inline;">
-											<input type="hidden" name="_method" value="DELETE">
-											<button type="submit" class="text-red-500 hover:text-red-700" onclick="return confirm('Are you sure?');">Delete</button>
-										</form>
-									</td>
-								</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			{% else %}
-				<div class="text-center py-4">No calculations available.</div>
-			{% endif %}
-			
-			{# Pagination controls #}
-			<div class="mt-6 flex flex-wrap justify-between items-center gap-2">
-				{# Button to skip to the first page #}
-				<button 
-					id="first-page" 
-					onclick="navigatePage(1)"
-					class="bg-gray-300 px-3 py-1 text-sm md:px-4 md:py-2 md:text-base rounded {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
-					type="button"
-					title="Go to first page">
-					« First
-				</button>
-				
-				{# Button to go to the previous page #}
-				<button 
-					id="prev-page" 
-					onclick="navigatePage({{ currentPage - 1 }})"
-					class="bg-gray-300 px-3 py-1 text-sm md:px-4 md:py-2 md:text-base rounded {% if currentPage == 1 %}opacity-50 cursor-not-allowed{% endif %}" 
-					type="button"
-					title="Previous page">
-					‹ Prev
-				</button>
+                <span class="text-sm text-gray-300">Page {{ currentPage }} of {{ totalPages }}</span>
 
-				<span class="text-sm md:text-base">Page {{ currentPage }} of {{ totalPages }}</span>
+                {# Button to go to the next page #}
+                <button 
+                    id="next-page" 
+                    onclick="navigatePage({{ currentPage + 1 }})"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
+                    type="button"
+                    {% if currentPage == totalPages %}disabled{% endif %}
+                    title="Next page">
+                    Next ›
+                </button>
+                
+                {# Button to skip to the last page #}
+                <button 
+                    id="last-page" 
+                    onclick="navigatePage({{ totalPages }})"
+                    class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 bg-gray-700 rounded-lg border border-gray-600 hover:bg-gray-600 hover:text-white {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
+                    type="button"
+                    {% if currentPage == totalPages %}disabled{% endif %}
+                    title="Go to last page">
+                    Last »
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
-				{# Button to go to the next page #}
-				<button 
-					id="next-page" 
-					onclick="navigatePage({{ currentPage + 1 }})"
-					class="bg-gray-300 px-3 py-1 text-sm md:px-4 md:py-2 md:text-base rounded {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
-					type="button"
-					title="Next page">
-					Next ›
-				</button>
-				
-				{# Button to skip to the last page #}
-				<button 
-					id="last-page" 
-					onclick="navigatePage({{ totalPages }})"
-					class="bg-gray-300 px-3 py-1 text-sm md:px-4 md:py-2 md:text-base rounded {% if currentPage == totalPages %}opacity-50 cursor-not-allowed{% endif %}" 
-					type="button"
-					title="Go to last page">
-					Last »
-				</button>
-			</div>
-		</div>
-	</div>
-
-	<script>
-		/*
-		* Navigate to a different page.
-		*/
-		function navigatePage(page) {
-			// Create URL and redirect.
-			const url = new URL(window.location.href);
-			url.searchParams.set('page', page);
-			window.location.href = url.toString();
-		}
-	</script>
+<script>
+    /*
+    * Navigate to a different page.
+    */
+    function navigatePage(page) {
+        // Create URL and redirect.
+        const url = new URL(window.location.href);
+        url.searchParams.set('page', page);
+        window.location.href = url.toString();
+    }
+</script>
 {% endblock %}

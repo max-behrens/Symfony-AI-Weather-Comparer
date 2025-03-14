@@ -3,137 +3,155 @@
 {% block title %}Weather Forecast{% endblock %}
 
 {% block body %}
-<div class="container mx-auto p-5 mt-10">
-		<h1 class="text-3xl font-semibold text-center mb-8">Forecast Fluctuation API</h1>
-    <div class="bg-white shadow-lg rounded-lg p-6 mb-6">
-        <h1 class="text-2xl font-bold mb-4">Weather Forecast</h1>
+<div class="mx-auto p-20 dark:bg-gray-900 dark:text-white min-h-screen">
+    <h1 class="text-4xl font-bold text-center mb-8 text-gray-800 dark:text-gray-100">Forecast Fluctuation API</h1>
+    
+    <!-- Search Card -->
+    <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8 dark:bg-gray-800 dark:border-gray-700">
+        <h1 class="text-2xl font-extrabold mb-4 text-gray-800 dark:text-white">Weather Forecast</h1>
         
         {% if error is defined %}
-            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
                 {{ error }}
             </div>
         {% endif %}
         
-            {{ form_start(formFind, {
-                'method': 'GET',
-                'action': path('weather_index')
-            }) }}
-                <div class="mb-4">
-                    {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 p-2 border border-gray-300 rounded w-full'}}) }}
-                </div>
-                {{ form_widget(formFind.submit, {'attr': {'class': 'mt-2 p-2 bg-blue-500 text-white rounded hover:bg-blue-600'}}) }}
-            {{ form_end(formFind) }}
+        {{ form_start(formFind, {
+            'method': 'GET',
+            'action': path('weather_index')
+        }) }}
+            <div class="mb-4">
+                {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}}) }}
+            </div>
+            {{ form_widget(formFind.submit, {'attr': {'class': 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none'}}) }}
+        {{ form_end(formFind) }}
+    </div>
+
+        <!-- Loading Spinner - Hidden by default -->
+    <div id="loading-spinner" class="hidden absolute bg-gray-900 bg-opacity-50 flex items-center justify-center z-50" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; height: 100%;">
+        <div class="text-center">
+            <div class="inline-block h-16 w-16 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" role="status">
+                <span class="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">Loading...</span>
+            </div>
+            <p class="mt-4 text-white font-semibold">Loading weather data...</p>
+        </div>
     </div>
 
     {% set city = city is defined ? city : '' %}
     
     {% if showResults is defined and showResults %}
+        <!-- Forecast Results Section -->
         <div id="weatherForecastResults" class="mb-8">
-            <h2 id="forecastTitle" class="text-xl font-bold mb-4">Daily Average Forecast for {{ city }}</h2>
+            <h2 id="forecastTitle" class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Daily Average Forecast for {{ city }}</h2>
             
             <div id="forecastContainer" class="grid grid-cols-1 md:grid-cols-5 gap-4">
                 {% for forecast in forecasts %}
-                    <div class="bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded-lg w-full">
-                        <h4 class="text-lg font-semibold mb-2">Forecast for: {{ forecast.time }}</h4>
-                        <p><strong>Temperature:</strong> {{ forecast.temperature|number_format(2) }}°C</p>
-                        <p><strong>Feels Like:</strong> {{ forecast.feels_like|number_format(2) }}°C</p>
-                        <p><strong>Humidity:</strong> {{ forecast.humidity }}%</p>
-                        <p><strong>Pressure:</strong> {{ forecast.pressure }} hPa</p>
+                    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 p-5">
+                        <h4 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white">{{ forecast.time }}</h4>
+                        <div class="font-normal text-gray-700 dark:text-gray-400">
+                            <p class="flex items-center py-1"><span class="font-medium w-28">Temperature:</span> {{ forecast.temperature|number_format(2) }}°C</p>
+                            <p class="flex items-center py-1"><span class="font-medium w-28">Feels Like:</span> {{ forecast.feels_like|number_format(2) }}°C</p>
+                            <p class="flex items-center py-1"><span class="font-medium w-28">Humidity:</span> {{ forecast.humidity }}%</p>
+                            <p class="flex items-center py-1"><span class="font-medium w-28">Pressure:</span> {{ forecast.pressure }} hPa</p>
+                        </div>
                     </div>
                 {% endfor %}
             </div>
         </div>
         
+        <!-- Weather Analysis Results -->
         <div id="weatherCalculationResults" class="space-y-6">
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Temperature Analysis</h2>
-                <p>Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
-                <p>Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
-                <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">OpenAI Explanation:</h3>
+            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Temperature Analysis</h2>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
+                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                    <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ temperatureExplanation }}</p>
                 </div>
             </div>
-            
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Humidity Analysis</h2>
-                <p>Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
-                <p>Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
-                <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">OpenAI Explanation:</h3>
+
+            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Humidity Analysis</h2>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
+                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                    <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ humidityExplanation }}</p>
                 </div>
             </div>
-            
-            <div class="bg-white shadow-lg rounded-lg p-6">
-                <h2 class="text-xl font-bold mb-4">Pressure Analysis</h2>
-                <p>Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
-                <p>Overall Pressure Volatility: {{ averagePressureChanges }}</p>
-                <div class="mt-4 p-4 bg-gray-100 rounded-lg">
-                    <h3 class="font-semibold">OpenAI Explanation:</h3>
+
+            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <h2 class="mb-4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Pressure Analysis</h2>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Pressure Volatility: {{ averagePressureChanges }}</p>
+                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                    <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ pressureExplanation }}</p>
                 </div>
             </div>
             
-               {{ form_start(formSave, {'attr': {'id': 'weather_form', 'action': path('calculation_create', {
-                    'city': city,
-                    'temperatureChanges': temperatureChanges|join(','),
-                    'averageTemperatureChanges': averageTemperatureChanges,
-                    'humidityChanges': humidityChanges|join(','),
-                    'averageHumidityChanges': averageHumidityChanges,
-                    'pressureChanges': pressureChanges|join(','),
-                    'averagePressureChanges': averagePressureChanges,
-                    'temperatureExplanation': temperatureExplanation,
-                    'humidityExplanation': humidityExplanation,
-                    'pressureExplanation': pressureExplanation,
-                })}})   }}
+            <!-- Save Form -->
+            {{ form_start(formSave, {'attr': {'id': 'weather_form', 'action': path('calculation_create', {
+                'city': city,
+                'temperatureChanges': temperatureChanges|join(','),
+                'averageTemperatureChanges': averageTemperatureChanges,
+                'humidityChanges': humidityChanges|join(','),
+                'averageHumidityChanges': averageHumidityChanges,
+                'pressureChanges': pressureChanges|join(','),
+                'averagePressureChanges': averagePressureChanges,
+                'temperatureExplanation': temperatureExplanation,
+                'humidityExplanation': humidityExplanation,
+                'pressureExplanation': pressureExplanation,
+            })}}) }}
 
+            <div style="display:none;">
+                {{ form_widget(formSave.calculations, {'value': ''}) }}
+                {{ form_widget(formSave.aiResponse, {'value': ''}) }}
+                {{ form_widget(formSave.country, {'value': ''}) }}
+            </div>
 
-                <div style="display:none;">
-                    {{ form_widget(formSave.calculations, {'value': ''}) }}
-                    {{ form_widget(formSave.aiResponse, {'value': ''}) }}
-                    {{ form_widget(formSave.country, {'value': ''}) }}
-                </div>
-
-                {{ form_widget(formSave.save) }}
-
-                {{ form_end(formSave) }}
-
+            <!-- Updated save button to match the blue style -->
+            {{ form_widget(formSave.save, {'attr': {'class': 'mt-4 text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none'}}) }}
+            {{ form_end(formSave) }}
         </div>
     {% endif %}
 
-    <div class="top-5 right-5 mt-12 z-50">
+    <!-- Chatbot Component -->
+    <div class="fixed bottom-5 right-5 mt-12 z-50">
         <!-- Chatbot Toggle Button -->
-        <button class="bg-blue-500 text-white px-4 py-2 rounded-full shadow-lg chatbot-toggle">
+        <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-full text-sm px-5 py-2.5 focus:outline-none chatbot-toggle">
             💬 Chat with AI
         </button>
 
         <!-- Chatbot Window -->
-        <div class="bg-white border border-gray-300 shadow-lg rounded-lg p-4 w-full chatbot-window">
-            <div class="flex justify-between items-center border-b pb-2">
-                <h4 class="text-lg font-semibold">Chatbot</h4>
-                <button class="text-red-500 chatbot-close">✖</button>
+        <div class="bg-white border border-gray-200 rounded-lg shadow-md p-4 w-96 chatbot-window hidden dark:bg-gray-800 dark:border-gray-700">
+            <div class="flex justify-between items-center border-b border-gray-200 pb-3">
+                <h4 class="text-xl font-bold text-gray-900 dark:text-white">Chatbot</h4>
+                <button class="text-gray-400 hover:text-gray-900 focus:outline-none chatbot-close">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                    </svg>
+                </button>
             </div>
             
             <!-- Chat Messages -->
-            <div class="chatbot-messages h-60 overflow-y-auto p-2">
+            <div class="chatbot-messages h-72 overflow-y-auto p-3 space-y-3 dark:bg-gray-700 dark:text-gray-300">
                 <!-- Messages will be inserted here by JavaScript -->
             </div>
 
             <!-- Chat Input Field -->
-            <div class="mt-2 flex">
-                <input type="text" class="border px-2 py-1 flex-1 rounded-l chatbot-input" placeholder="Type a message..." />
-                <button class="bg-blue-500 text-white px-3 py-1 rounded-r chatbot-send">Send</button>
+            <div class="mt-3 flex">
+                <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-l-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 chatbot-input dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" placeholder="Type a message..." />
+                <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-5 py-2.5 focus:outline-none chatbot-send">Send</button>
             </div>
         </div>
     </div>
-
 </div>
 
+
 <script>
-
 document.addEventListener('DOMContentLoaded', function() {
-
     // Prepare data directly from Twig variables
     const city = "{{ city|default('') }}";
     const calculationData = {
@@ -148,7 +166,103 @@ document.addEventListener('DOMContentLoaded', function() {
         pressureExplanation: {{ pressureExplanation|default('No explanation available')|json_encode|raw }}
     };
 
-    console.log('CALC: ' , calculationData);
+     // Fix text wrapping in forecast blocks
+    const forecastBlocks = document.querySelectorAll('#forecastContainer > div');
+    forecastBlocks.forEach(block => {
+        // Apply word-break and overflow-wrap to ensure text wraps properly
+        block.style.wordBreak = 'break-word';
+        block.style.overflowWrap = 'break-word';
+        
+        // Apply the same to all paragraph elements inside
+        const paragraphs = block.querySelectorAll('p');
+        paragraphs.forEach(p => {
+            p.style.wordBreak = 'break-word';
+            p.style.overflowWrap = 'break-word';
+        });
+    });
+    
+    // Reposition spinner to center of main content area
+    const spinner = document.getElementById('loading-spinner');
+    if (spinner) {
+        // Remove fixed positioning and inset-0 classes
+        spinner.classList.remove('fixed', 'inset-0');
+        
+        // Add new positioning classes
+        spinner.classList.add('absolute');
+        
+        // Update the spinner's style
+        spinner.style.position = 'absolute';
+        spinner.style.top = '50%';
+        spinner.style.left = '50%';
+        spinner.style.transform = 'translate(-50%, -50%)';
+        spinner.style.width = '100%';
+        spinner.style.height = '100%';
+        
+        // Find the main content div (which has the dark:bg-gray-900 class)
+        const mainContent = document.querySelector('.dark\\:bg-gray-900');
+        if (mainContent) {
+            // Set the main content to position relative to contain the absolute spinner
+            mainContent.style.position = 'relative';
+            
+            // Move the spinner element inside the main content if it's not already there
+            if (spinner.parentNode !== mainContent) {
+                mainContent.appendChild(spinner);
+            }
+        }
+    }
+
+
+ // Get the form element
+    const weatherSearchForm = document.querySelector('form[action*="weather_index"]');
+    const loadingSpinner = document.getElementById('loading-spinner');
+    
+    console.log('Form found:', weatherSearchForm ? 'Yes' : 'No');
+    console.log('Spinner found:', loadingSpinner ? 'Yes' : 'No');
+    
+    if (weatherSearchForm) {
+        console.log('Adding submit event listener to form');
+        
+        // Add both submit and click handlers for redundancy
+        weatherSearchForm.addEventListener('submit', showSpinner);
+        
+        // Also add a click handler on the submit button
+        const submitButton = weatherSearchForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            console.log('Submit button found, adding click listener');
+            submitButton.addEventListener('click', showSpinner);
+        } else {
+            // Try to find the submit button by its class
+            const altSubmitButton = weatherSearchForm.querySelector('input[type="submit"], button.btn-primary');
+            if (altSubmitButton) {
+                console.log('Alternative submit button found, adding click listener');
+                altSubmitButton.addEventListener('click', showSpinner);
+            }
+        }
+    } else {
+        console.error('Weather search form not found!');
+    }
+    
+    function showSpinner(event) {
+        console.log('Form submit/button click detected!');
+        if (loadingSpinner) {
+            console.log('Showing spinner...');
+            loadingSpinner.classList.remove('hidden');
+            loadingSpinner.style.display = 'flex'; // Force display as flex
+        } else {
+            console.error('Loading spinner element not found!');
+        }
+    }
+    
+    // Also add a fallback for when the page is unloading
+    window.addEventListener('beforeunload', function(e) {
+        // Don't show on browser back/forward
+        if (document.activeElement && 
+            (document.activeElement.type === 'submit' || 
+             document.activeElement.tagName === 'BUTTON')) {
+            console.log('Page unloading due to button click, showing spinner');
+            if (loadingSpinner) loadingSpinner.classList.remove('hidden');
+        }
+    });
 
 
     // Chatbot input and toggle elements
@@ -171,6 +285,7 @@ document.addEventListener('DOMContentLoaded', function() {
     chatInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
+    
 
     async function sendMessage() {
         if (!chatInput || chatInput.value.trim() === "") return;
@@ -197,10 +312,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Add a message to the chat window
     function addMessageToChat(message, isUser = false) {
         const messageElement = document.createElement('div');
-        messageElement.className = isUser ? 'text-right mb-2' : 'text-left mb-2';
+        messageElement.className = isUser ? 'flex justify-end' : 'flex justify-start';
         messageElement.innerHTML = `
-            <div class="${isUser ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'} 
-                inline-block px-4 py-2 rounded-lg max-w-xs">
+            <div class="${isUser ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'} 
+                max-w-xs p-3 rounded-lg ${isUser ? 'rounded-br-none' : 'rounded-bl-none'}">
                 ${message}
             </div>`;
         chatbotMessages.appendChild(messageElement);
@@ -241,55 +356,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Add form submission handler
+    const weatherForm = document.querySelector('#weather_form');
+    if (weatherForm) {
+        weatherForm.addEventListener('submit', function(event) {
+            // Get the chatbot messages content
+            const chatbotMessages = Array.from(document.querySelectorAll('.chatbot-messages div'))
+                .map(msg => msg.innerText) // Get the inner text of all message elements
+                .join('\n'); // Join them with a newline separator
 
-    document.querySelector('#weather_form').addEventListener('submit', function(event) {
-        // Get the chatbot messages content
-        const chatbotMessages = Array.from(document.querySelectorAll('.chatbot-messages div'))
-            .map(msg => msg.innerText) // Get the inner text of all message elements
-            .join('\n'); // Join them with a newline separator
+            // Get the current action path
+            let actionUrl = event.target.getAttribute('action');
+            
+            // Add chatbotMessages as a query parameter to the action URL
+            const urlWithChatbotMessages = new URL(actionUrl, window.location.origin);
+            urlWithChatbotMessages.searchParams.append('chatbotMessages', chatbotMessages);
 
-        // Get the current action path
-        let actionUrl = event.target.getAttribute('action');
-        
-        // Add chatbotMessages as a query parameter to the action URL
-        const urlWithChatbotMessages = new URL(actionUrl, window.location.origin);
-        urlWithChatbotMessages.searchParams.append('chatbotMessages', chatbotMessages);
-
-
-        // Update the form's action attribute with the new URL
-        event.target.setAttribute('action', urlWithChatbotMessages.toString());
-    });
-
-
-
-    // TODO: Find way to persist chatbot messages after a symfony form reload,
-    // and to only clear messages after revisiting the weather index when the form is not submitted.
-
-
-    // // Function to save chat messages to localStorage
-    // function saveChatMessages() {
-    //     const messages = Array.from(document.querySelectorAll('.chatbot-messages div'))
-    //         .map(msg => ({
-    //             content: msg.innerHTML,
-    //             isUser: msg.classList.contains('text-right')
-    //         }));
-    //     localStorage.setItem('chatMessages', JSON.stringify(messages));
-    // }
-
-    // // Function to load chat messages from localStorage
-    // function loadChatMessages() {
-    //     const savedMessages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-    //     savedMessages.forEach(msg => addMessageToChat(msg.content, msg.isUser));
-    // }
-
-    // Call this function when the page loads
-    // window.addEventListener('DOMContentLoaded', loadChatMessages);
-
-
-    // // Save messages before form submission
-    // document.querySelector('#weatherForm').addEventListener('submit', saveChatMessages);
+            // Update the form's action attribute with the new URL
+            event.target.setAttribute('action', urlWithChatbotMessages.toString());
+        });
+    }
 });
-
 </script>
-
 {% endblock %}

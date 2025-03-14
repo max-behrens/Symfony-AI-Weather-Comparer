@@ -18,7 +18,7 @@ class WeatherSearchType extends AbstractType
                 'label' => 'City',
                 'required' => true,
                 'attr' => [
-                    'class' => 'mt-2 p-2 border border-gray-300 rounded w-full'
+                    'class' => 'mt-2 mb-2 p-2 border border-gray-300 rounded w-full'
                 ]
             ])
             ->add('submit', SubmitType::class, [

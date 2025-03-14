@@ -1,6 +1,5 @@
 <?php
 
-// src/Form/CalculationType.php
 namespace App\Form;
 
 use App\Entity\Calculation;
@@ -16,9 +15,9 @@ class CalculationType extends AbstractType
     {
         $builder
             ->add('calculations', TextareaType::class, [
-                'required' => false, // Not required since it may be hidden
+                'required' => false,
                 'attr' => [
-                    'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
+                    'class' => 'block w-full mt-1 mb-2 bg-gray-700 text-white border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 placeholder-gray-400',
                     'rows' => '4',
                     'placeholder' => 'Enter the calculations details...',
                 ],
@@ -27,7 +26,7 @@ class CalculationType extends AbstractType
             ->add('aiResponse', TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
+                    'class' => 'block w-full mt-1 mb-2 bg-gray-700 text-white border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 placeholder-gray-400',
                     'rows' => '4',
                     'placeholder' => 'AI Response information...',
                 ],
@@ -36,19 +35,18 @@ class CalculationType extends AbstractType
             ->add('country', TextareaType::class, [
                 'required' => false,
                 'attr' => [
-                    'class' => 'block w-full mt-1 border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2',
+                    'class' => 'block w-full mt-1 mb-2 bg-gray-700 text-white border-gray-600 rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 placeholder-gray-400',
                     'placeholder' => 'Country related to the data...',
                 ],
                 'label' => 'Country',
             ])
             ->add('save', SubmitType::class, [
                 'attr' => [
-                    'class' => 'mt-2 p-2 bg-blue-500 text-white rounded',
+                    'class' => 'mt-2 mb-2 p-2 bg-blue-700 text-white rounded-lg hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 focus:outline-none',
                 ],
                 'label' => 'Save Fluctuation Values',
             ]);
     }
-
 
     public function configureOptions(OptionsResolver $resolver)
     {
