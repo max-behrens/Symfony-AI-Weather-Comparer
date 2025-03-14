@@ -57,7 +57,7 @@ class WeatherService
         
             // Use IntlDateFormatter to format the date in "14th March 2025" format
             $dateFormatter = new \IntlDateFormatter(
-                'en_US', 
+                'en', 
                 \IntlDateFormatter::LONG, 
                 \IntlDateFormatter::NONE, 
                 'GMT', 

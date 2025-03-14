@@ -15,7 +15,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.0/flowbite.min.js"></script>
         
         {% block stylesheets %}{% endblock %}
+            {# {{ encore_entry_link_tags('app') }} #}
         {% block javascripts %}
+            {# {{ encore_entry_script_tags('app') }} #}
             {{ importmap('app') }}
         {% endblock %}
     </head>

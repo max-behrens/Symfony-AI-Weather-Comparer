@@ -44,9 +44,9 @@
         <div id="weatherForecastResults" class="mb-8">
             <h2 id="forecastTitle" class="text-2xl font-bold mb-4 text-gray-800 dark:text-white">Daily Average Forecast for {{ city }}</h2>
             
-            <div id="forecastContainer" class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div id="forecastContainer" class="flex flex-wrap gap-4 w-full">
                 {% for forecast in forecasts %}
-                    <div class="max-w-sm bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 p-5">
+                    <div class="flex-1 min-w-[280px] max-w-[300px] bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 p-5">
                         <h4 class="mb-2 text-lg font-bold tracking-tight text-gray-900 dark:text-white">{{ forecast.time }}</h4>
                         <div class="font-normal text-gray-700 dark:text-gray-400">
                             <p class="flex items-center py-1"><span class="font-medium w-28">Temperature:</span> {{ forecast.temperature|number_format(2) }}°C</p>
@@ -57,6 +57,7 @@
                     </div>
                 {% endfor %}
             </div>
+
         </div>
         
         <!-- Weather Analysis Results -->
@@ -238,8 +239,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 altSubmitButton.addEventListener('click', showSpinner);
             }
         }
-    } else {
-        console.error('Weather search form not found!');
     }
     
     function showSpinner(event) {
