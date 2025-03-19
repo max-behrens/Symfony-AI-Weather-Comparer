@@ -3,15 +3,15 @@
 {% block title %}Weather Forecast{% endblock %}
 
 {% block body %}
-<div class="mx-auto p-20 dark:bg-gray-900 dark:text-white min-h-screen">
-        <h1 class="text-xl font-semibold text-center mb-8 text-white">Forecast Fluctuation API</h1>
+<div class="mx-auto p-20 bg-gray-900 text-white min-h-screen spinner:spinner-class">
+        <h1 class="text-xl font-semibold text-center mb-8 text-white">New Weather Fluctuation Explainer</h1>
     
     <!-- Search Card -->
-    <div class="bg-white border border-gray-200 rounded-xl shadow-md p-6 mb-8 dark:bg-gray-800 dark:border-gray-700">
+    <div class=" border border-gray-200 rounded-xl shadow-md p-6 mb-8 bg-gray-800 border-gray-700">
         <h1 class="text-md font-semibold text-white mb-5">Weather Forecast</h1>
         
         {% if error is defined %}
-            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+            <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 bg-gray-800 text-red-400" role="alert">
                 {{ error }}
             </div>
         {% endif %}
@@ -21,7 +21,7 @@
             'action': path('weather_index')
         }) }}
             <div class="mb-4">
-                {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200'}}) }}
+                {{ form_row(formFind.city, {'attr': {'placeholder': 'Enter city name', 'class': 'mt-2 bg-gray-50 border border-gray-300 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-700 border-gray-600 text-gray-200'}}) }}
             </div>
             {{ form_widget(formFind.submit, {'attr': {'class': 'text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 focus:outline-none'}}) }}
         {{ form_end(formFind) }}
@@ -42,13 +42,13 @@
     {% if showResults is defined and showResults %}
         <!-- Forecast Results Section -->
         <div id="weatherForecastResults" class="mb-8">
-            <h2 id="forecastTitle" class="text-md font-bold mb-4 text-gray-800 dark:text-white">Daily Average Forecast for {{ city }}</h2>
+            <h2 id="forecastTitle" class="text-md font-bold mb-4 text-white">Daily Average Forecast for {{ city }}</h2>
             
             <div id="forecastContainer" class="flex flex-wrap gap-4 w-full">
                 {% for forecast in forecasts %}
-                    <div class="flex-1 min-w-[280px] max-w-[300px] bg-white border border-gray-200 rounded-lg shadow-md dark:bg-gray-800 dark:border-gray-700 p-5">
-                        <h4 class="mb-2 text-md font-bold tracking-tight text-gray-900 dark:text-white">{{ forecast.time }}</h4>
-                        <div class="font-normal text-gray-700 dark:text-gray-400">
+                    <div class="flex-1 min-w-[280px] max-w-[300px]  border border-gray-200 rounded-lg shadow-md bg-gray-800 border-gray-700 p-5">
+                        <h4 class="mb-2 text-md font-bold tracking-tight text-white">{{ forecast.time }}</h4>
+                        <div class="font-normal text-gray-400">
                             <p class="flex items-center py-1"><span class="font-medium w-28">Temperature:</span> {{ forecast.temperature|number_format(2) }}°C</p>
                             <p class="flex items-center py-1"><span class="font-medium w-28">Feels Like:</span> {{ forecast.feels_like|number_format(2) }}°C</p>
                             <p class="flex items-center py-1"><span class="font-medium w-28">Humidity:</span> {{ forecast.humidity }}%</p>
@@ -62,31 +62,31 @@
         
         <!-- Weather Analysis Results -->
         <div id="weatherCalculationResults" class="space-y-6">
-            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Temperature Analysis</h2>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
-                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+            <div class="p-6  border border-gray-200 rounded-lg shadow bg-gray-800 border-gray-700">
+                <h2 class="mb-4 text-md font-bold tracking-tight text-white">Temperature Analysis</h2>
+                <p class="mb-3 font-normal text-gray-400">Rate of Change Between Each Day: {{ temperatureChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-400">Overall Temperature Volatility: {{ averageTemperatureChanges }}</p>
+                <div class="p-4 mt-4 text-sm rounded-lg bg-gray-50 bg-gray-700 text-gray-300">
                     <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ temperatureExplanation }}</p>
                 </div>
             </div>
 
-            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Humidity Analysis</h2>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
-                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+            <div class="p-6  border border-gray-200 rounded-lg shadow bg-gray-800 border-gray-700">
+                <h2 class="mb-4 text-md font-bold tracking-tight text-white">Humidity Analysis</h2>
+                <p class="mb-3 font-normal text-gray-400">Rate of Change Between Each Day: {{ humidityChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-400">Overall Humidity Volatility: {{ averageHumidityChanges }}</p>
+                <div class="p-4 mt-4 text-sm rounded-lg bg-gray-50 bg-gray-700 text-gray-300">
                     <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ humidityExplanation }}</p>
                 </div>
             </div>
 
-            <div class="p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <h2 class="mb-4 text-md font-bold tracking-tight text-gray-900 dark:text-white">Pressure Analysis</h2>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
-                <p class="mb-3 font-normal text-gray-700 dark:text-gray-400">Overall Pressure Volatility: {{ averagePressureChanges }}</p>
-                <div class="p-4 mt-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+            <div class="p-6  border border-gray-200 rounded-lg shadow bg-gray-800 border-gray-700">
+                <h2 class="mb-4 text-md font-bold tracking-tight text-white">Pressure Analysis</h2>
+                <p class="mb-3 font-normal text-gray-400">Rate of Change Between Each Day: {{ pressureChanges|join(', ') }}</p>
+                <p class="mb-3 font-normal text-gray-400">Overall Pressure Volatility: {{ averagePressureChanges }}</p>
+                <div class="p-4 mt-4 text-sm rounded-lg bg-gray-50 bg-gray-700 text-gray-300">
                     <h3 class="text-lg font-semibold">OpenAI Explanation:</h3>
                     <p>{{ pressureExplanation }}</p>
                 </div>
@@ -126,10 +126,10 @@
         </button>
 
         <!-- Chatbot Window -->
-        <div class="bg-white border border-gray-200 rounded-lg shadow-md p-4 w-96 chatbot-window hidden dark:bg-gray-800 dark:border-gray-700">
+        <div class=" border border-gray-200 rounded-lg shadow-md p-4 w-96 chatbot-window hidden bg-gray-800 border-gray-700">
             <div class="flex justify-between items-center border-b border-gray-200 pb-3">
-                <h4 class="text-xl font-bold text-gray-900 dark:text-white">Chatbot</h4>
-                <button class="text-gray-400 hover:text-gray-900 focus:outline-none chatbot-close">
+                <h4 class="text-xl font-bold text-white">Chatbot</h4>
+                <button class="text-gray-400 hover:focus:outline-none chatbot-close">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                     </svg>
@@ -137,13 +137,13 @@
             </div>
             
             <!-- Chat Messages -->
-            <div class="chatbot-messages h-72 overflow-y-auto p-3 space-y-3 dark:bg-gray-700 dark:text-gray-300">
+            <div class="chatbot-messages h-72 overflow-y-auto p-3 space-y-3 bg-gray-700 text-gray-300">
                 <!-- Messages will be inserted here by JavaScript -->
             </div>
 
             <!-- Chat Input Field -->
             <div class="mt-3 flex">
-                <input type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-l-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 chatbot-input dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200" placeholder="Type a message..." />
+                <input type="text" class="bg-gray-50 border border-gray-300 text-sm rounded-l-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 chatbot-input bg-gray-700 border-gray-600 text-gray-200" placeholder="Type a message..." />
                 <button class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-r-lg text-sm px-5 py-2.5 focus:outline-none chatbot-send">Send</button>
             </div>
         </div>
@@ -198,9 +198,11 @@ document.addEventListener('DOMContentLoaded', function() {
         spinner.style.transform = 'translate(-50%, -50%)';
         spinner.style.width = '100%';
         spinner.style.height = '100%';
+        spinner.style.background = 'none'; // Removes background
+        spinner.style.setProperty('background', 'none', 'important'); // Ensures no background override
         
-        // Find the main content div (which has the dark:bg-gray-900 class)
-        const mainContent = document.querySelector('.dark\\:bg-gray-900');
+        // Find the main content div (which has the spinner-class class)
+        const mainContent = document.querySelector('.spinner\\:spinner-class');
         if (mainContent) {
             // Set the main content to position relative to contain the absolute spinner
             mainContent.style.position = 'relative';
